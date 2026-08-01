@@ -42,12 +42,15 @@
     color-scheme: dark;
   }
   *{box-sizing:border-box;}
-  html{width:100%;overflow-x:hidden;scroll-behavior:smooth;}
+  html{width:100%;}
   body{
     margin:0;background:var(--bg);color:var(--text-hi);font-family:'Quicksand',sans-serif;font-weight:600;
-    width:100%;overflow-x:hidden;transition:background 0.3s,color 0.3s;-webkit-font-smoothing:antialiased;
+    width:100%;max-width:100vw;transition:background 0.3s,color 0.3s;-webkit-font-smoothing:antialiased;
     position:relative;
   }
+  /* NOTE: overflow-x:hidden was intentionally removed from html/body — it silently
+     breaks position:sticky on iOS Safari. max-width:100vw on body prevents any
+     horizontal scroll instead. */
   body::before{
     content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.55;
     background-image:
@@ -85,16 +88,21 @@
     to{background-position:40px 0;}
   }
   @keyframes floatSway{
-    0%,100%{transform:translateY(0) rotate(0deg);}
-    50%{transform:translateY(-3px) rotate(0deg);}
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-3px);}
   }
   @keyframes confettiBurst{
     0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;}
     100%{transform:translate(var(--dx),var(--dy)) scale(0.3) rotate(180deg);opacity:0;}
   }
+  @keyframes sheetIn{
+    from{opacity:0;transform:translateY(28px) scale(0.97);}
+    to{opacity:1;transform:translateY(0) scale(1);}
+  }
   @media (prefers-reduced-motion: reduce){
     *,*::before,*::after{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
   }
+  html{scroll-behavior:smooth;}
 
   /* Navbar */
   .navbar{
@@ -107,8 +115,8 @@
     box-shadow:0 6px 18px rgba(var(--shadow-tint),0.35);
     border-bottom-color:var(--border);
   }
-  .navbar-inner{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-  .brand{display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-hi);}
+  .navbar-inner{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-hi);min-width:0;}
   .brand-dot{
     width:26px;height:26px;flex-shrink:0;border-radius:50% 50% 50% 10%;
     background:var(--korean);display:flex;align-items:center;justify-content:center;font-size:14px;
@@ -116,8 +124,15 @@
   }
   .brand b{font-family:'Baloo 2',cursive;font-weight:800;letter-spacing:0.2px;}
   .brand .slash{color:var(--text-lo);font-weight:600;}
-  .navbar-right{display:flex;align-items:center;gap:12px;}
+  .navbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
   .navbar-clock{font-family:'Baloo 2',cursive;font-size:13px;color:var(--text-lo);letter-spacing:0.3px;background:var(--surface-2);padding:5px 10px;border-radius:20px;}
+  .icon-btn{
+    width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:2.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;
+    transition:transform 0.15s ease,background 0.2s;
+  }
+  .icon-btn:hover{transform:translateY(-2px) rotate(-6deg);}
+  .icon-btn:active{transform:translateY(0) scale(0.92);}
   .theme-switch{
     width:52px;height:28px;border-radius:20px;background:var(--surface-2);border:2.5px solid var(--border);
     position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.2s,border-color 0.2s;
@@ -132,7 +147,7 @@
   /* Section eyebrow */
   .eyebrow{font-family:'Baloo 2',cursive;font-size:13px;letter-spacing:0.4px;color:var(--korean);text-transform:uppercase;margin:0 2px 10px;font-weight:700;}
 
-  /* Now card — the "wrapped candy" signature */
+  /* Now card */
   .now{
     position:relative;
     background:var(--surface);
@@ -181,6 +196,7 @@
   .btn:hover{transform:translateY(-2px);}
   .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--border);}
   .btn.active{background:var(--korean);border-color:var(--korean);color:#fff;box-shadow:0 4px 0 #C7305F;}
+  .btn.small{padding:7px 14px;font-size:12.5px;}
 
   /* Day tabs — jellybeans */
   .days{display:flex;gap:8px;margin:28px 0 14px;overflow-x:auto;padding:10px 6px;}
@@ -205,12 +221,12 @@
   .day-tab .today-dot{position:absolute;top:2px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--devops);}
   .day-tab.sel .today-dot{background:#fff;}
 
-  /* Timeline */
-  .timeline{background:transparent;border-radius:24px;transition:opacity 0.22s ease;display:flex;flex-direction:column;gap:12px;}
+  /* Timeline — redesigned as a stacked card (header row / content / done row) so
+     nothing squeezes together on narrow screens like iPhone SE. */
+  .timeline{background:transparent;transition:opacity 0.22s ease;display:flex;flex-direction:column;gap:12px;}
   .block{
-    display:flex;gap:12px;padding:16px 18px;align-items:flex-start;
     background:var(--surface);border:3px solid var(--border-soft);border-radius:20px;
-    box-shadow:0 4px 0 var(--border-soft);
+    padding:14px 16px;box-shadow:0 4px 0 var(--border-soft);
     transition:background 0.25s ease,opacity 0.35s ease,transform 0.2s ease,border-color 0.2s ease,box-shadow 0.2s ease;
     animation:bounceIn 0.45s ease both;
   }
@@ -218,9 +234,21 @@
   .block.done{opacity:0.6;}
   .block.done .b-title{text-decoration:line-through;}
   .block.run{background:var(--surface-2);border-color:var(--korean);box-shadow:0 4px 0 var(--korean);}
-  .b-time{font-family:'Baloo 2',cursive;font-size:11.5px;color:var(--text-lo);width:74px;flex-shrink:0;padding-top:2px;white-space:nowrap;line-height:1.7;font-weight:700;}
+
+  .block-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+  .b-time{font-family:'Baloo 2',cursive;font-size:11.5px;color:var(--text-lo);font-weight:700;white-space:nowrap;}
+  .block-top-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .b-status{
+    font-family:'Baloo 2',cursive;font-size:9.5px;letter-spacing:0.3px;padding:4px 10px;border-radius:20px;
+    white-space:nowrap;font-weight:700;transition:color 0.25s ease,background 0.25s ease;flex-shrink:0;
+  }
+  .b-status.run{color:#fff;background:var(--korean);}
+  .b-status.queued{color:var(--text-lo);background:var(--surface-2);}
+  .b-status.done{color:#fff;background:var(--done);}
+
+  .block-main{display:flex;gap:10px;align-items:flex-start;}
   .b-tag{
-    width:16px;height:16px;border-radius:50%;margin-top:4px;flex-shrink:0;transition:transform 0.2s ease;
+    width:16px;height:16px;border-radius:50%;margin-top:3px;flex-shrink:0;transition:transform 0.2s ease;
     box-shadow:inset 0 -3px 0 rgba(0,0,0,0.15), 0 0 0 3px var(--surface);
     position:relative;
   }
@@ -229,17 +257,10 @@
   .b-body{flex:1;min-width:0;}
   .b-title{font-family:'Baloo 2',cursive;font-size:14.5px;font-weight:700;margin:0 0 3px;}
   .b-desc{font-size:12.5px;color:var(--text-lo);line-height:1.5;margin:0;font-weight:600;}
-  .b-status{
-    font-family:'Baloo 2',cursive;font-size:9.5px;letter-spacing:0.3px;flex-shrink:0;padding:4px 10px;border-radius:20px;
-    white-space:nowrap;font-weight:700;transition:color 0.25s ease,background 0.25s ease;
-  }
-  .b-status.run{color:#fff;background:var(--korean);}
-  .b-status.queued{color:var(--text-lo);background:var(--surface-2);}
-  .b-status.done{color:#fff;background:var(--done);}
 
   /* Gumdrop checkbox */
   .chk{
-    appearance:none;-webkit-appearance:none;width:26px;height:26px;flex-shrink:0;margin-top:2px;cursor:pointer;
+    appearance:none;-webkit-appearance:none;width:22px;height:22px;flex-shrink:0;cursor:pointer;
     border-radius:50%;border:3px solid var(--border-soft);background:var(--surface-2);position:relative;
     box-shadow:0 3px 0 var(--border-soft);
     transition:transform 0.2s cubic-bezier(.68,-0.55,.27,1.55),background 0.2s,border-color 0.2s,box-shadow 0.2s;
@@ -248,11 +269,11 @@
   .chk:checked{background:var(--done);border-color:var(--done);box-shadow:0 3px 0 #1A9E86;}
   .chk:checked::after{
     content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    color:#fff;font-size:13px;font-weight:800;
+    color:#fff;font-size:12px;font-weight:800;
   }
   .chk:active{transform:translateY(2px);box-shadow:0 1px 0 var(--border-soft);}
   .chk.popped{animation:gumPop 0.4s ease;}
-  .confetti-bit{position:fixed;width:6px;height:6px;border-radius:2px;pointer-events:none;z-index:60;animation:confettiBurst 0.6s ease-out forwards;}
+  .confetti-bit{position:fixed;width:6px;height:6px;border-radius:2px;pointer-events:none;z-index:80;animation:confettiBurst 0.6s ease-out forwards;}
 
   /* toast */
   .toast{
@@ -260,7 +281,7 @@
     background:var(--korean);border:3px solid var(--surface);color:#fff;
     padding:12px 20px;border-radius:20px;font-size:13.5px;font-family:'Baloo 2',cursive;font-weight:700;
     opacity:0;transition:all 0.35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
-    box-shadow:0 6px 0 #C7305F, 0 10px 24px rgba(0,0,0,0.25);z-index:50;max-width:90%;
+    box-shadow:0 6px 0 #C7305F, 0 10px 24px rgba(0,0,0,0.25);z-index:90;max-width:90%;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -285,11 +306,66 @@
 
   .footnote{font-size:11.5px;color:var(--text-lo);margin-top:20px;line-height:1.6;text-align:center;padding:0 8px;font-weight:600;}
 
+  /* Settings modal */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(35,19,49,0.55);z-index:100;
+    display:none;align-items:flex-end;justify-content:center;padding:0;
+    backdrop-filter:blur(3px);
+  }
+  .modal-overlay.show{display:flex;}
+  @media(min-width:560px){
+    .modal-overlay{align-items:center;padding:20px;}
+  }
+  .modal-card{
+    background:var(--bg);width:100%;max-width:560px;max-height:88vh;overflow-y:auto;
+    border:4px solid var(--border);border-radius:28px 28px 0 0;padding:0 18px 24px;
+    animation:sheetIn 0.35s cubic-bezier(.34,1.56,.64,1) both;
+    box-shadow:0 -8px 30px rgba(var(--shadow-tint),0.3);
+  }
+  @media(min-width:560px){
+    .modal-card{border-radius:28px;}
+  }
+  .modal-header{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    position:sticky;top:0;z-index:10;background:var(--bg);padding:20px 0 12px;margin:0 0 12px;
+    border-bottom:3px dashed var(--border-soft);
+  }
+  .modal-header h2{font-family:'Baloo 2',cursive;font-size:19px;margin:0;}
+  .modal-day-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;margin-bottom:8px;}
+  .modal-day-tabs .day-tab{animation:none;}
+  .modal-body{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+  .edit-row{
+    background:var(--surface);border:2.5px solid var(--border-soft);border-radius:18px;padding:12px 14px;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .edit-row-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .edit-row input[type="time"], .edit-row select{
+    font-family:'Quicksand',sans-serif;font-weight:700;font-size:12.5px;color:var(--text-hi);
+    background:var(--surface-2);border:2px solid var(--border-soft);border-radius:10px;padding:6px 8px;
+  }
+  .edit-row input[type="time"]{flex-shrink:0;}
+  .edit-row select{flex:1;min-width:90px;}
+  .edit-title{
+    font-family:'Baloo 2',cursive;font-size:14px;font-weight:700;color:var(--text-hi);
+    background:var(--surface-2);border:2px solid var(--border-soft);border-radius:10px;padding:8px 10px;width:100%;
+  }
+  .edit-desc{
+    font-family:'Quicksand',sans-serif;font-size:12.5px;font-weight:600;color:var(--text-hi);
+    background:var(--surface-2);border:2px solid var(--border-soft);border-radius:10px;padding:8px 10px;width:100%;
+    resize:vertical;min-height:44px;
+  }
+  .edit-delete{
+    margin-left:auto;background:var(--surface-2);border:2px solid var(--border-soft);border-radius:10px;
+    width:32px;height:32px;flex-shrink:0;cursor:pointer;font-size:13px;
+  }
+  .edit-delete:hover{border-color:var(--korean);}
+  .modal-footer{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;}
+  .modal-footer .btn{flex:1;min-width:120px;}
+
   @media(max-width:480px){
     .now-title{font-size:19px;}
     .now{padding:20px 16px 18px;border-radius:22px;}
     .now::before,.now::after{width:16px;height:26px;}
-    .b-time{width:56px;font-size:9.5px;}
     .b-desc{font-size:11.5px;}
     .wrap{padding:16px 12px 40px;}
     .navbar-inner{padding:10px 12px;}
@@ -299,18 +375,15 @@
     .legend span{font-size:10px;padding:5px 9px;}
     .alert-row .btn{font-size:12.5px;padding:8px 15px;}
   }
-  @media(max-width:360px){
-    .b-status{display:none;}
-    .b-time{width:48px;}
-  }
 </style>
 </head>
 <body>
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
-    <div class="brand"><span class="brand-dot">🍬</span><b class="display">senji</b><span class="slash">/</span>schedule</div>
+    <div class="brand"><span class="brand-dot">🍫</span><b class="display">Sovichea</b><span class="slash">/</span>schedule</div>
     <div class="navbar-right">
       <span class="navbar-clock" id="clock">--:--:--</span>
+      <button class="icon-btn" id="settingsBtn" title="Edit schedule" aria-label="Edit schedule">⚙️</button>
       <button class="theme-switch" id="themeToggle" aria-label="Toggle dark and light mode" title="Toggle theme">
         <span class="knob" id="themeKnob">🍭</span>
       </button>
@@ -355,7 +428,23 @@
     </ul>
   </div>
 
-  <p class="footnote">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Your checkmarks are saved automatically for today's date.</p>
+  <p class="footnote">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Tap the ⚙️ to edit any day's blocks.</p>
+</div>
+
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 class="display">Edit <span id="settingsDayName">Mon</span>'s schedule</h2>
+      <button class="icon-btn" id="closeSettings" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-day-tabs" id="settingsDayTabs"></div>
+    <div class="modal-body" id="settingsBlockList"></div>
+    <button class="btn small" id="addBlockBtn" style="margin-bottom:14px;width:100%;">➕ Add block</button>
+    <div class="modal-footer">
+      <button class="btn" id="resetDayBtn">↺ Reset day</button>
+      <button class="btn active" id="saveDayBtn">Save changes</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -364,59 +453,68 @@
 <script>
 (function(){
   const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-
-  const KOREAN  = {id:'korean-am', time:[8*60,10*60], title:'Korean class', desc:'Taught by teacher.', tag:'korean'};
-  const AIENG   = {id:'aieng-am', time:[10*60,12*60], title:'AI Engineering class', desc:'Teacher-led, based on the topics researched for slides.', tag:'ai'};
-  const LUNCH   = {id:'lunch', time:[12*60,13*60+30], title:'Lunch break', desc:'', tag:'class'};
-  const REST    = {id:'rest', time:[17*60,18*60+30], title:'Rest & recharge', desc:'Eat, no screen. Let your brain recover from class.', tag:'class'};
-  const JOURNAL = {id:'journal', time:[20*60,20*60+30], title:'Quick journal', desc:'Write 3 lines: what I learned today.', tag:'class'};
-
-  const schedule = {
-    Mon: [KOREAN, AIENG, LUNCH,
-      {id:'mon-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
-      REST,
-      {id:'m1', time:[18*60+30,20*60], title:'Research DevOps topic', desc:'2-3 sources, rough notes in your own words — this is presented Thursday.', tag:'devops'},
-      JOURNAL],
-    Tue: [KOREAN, AIENG, LUNCH,
-      {id:'tue-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
-      REST,
-      {id:'t1', time:[18*60+30,20*60], title:'Outline DevOps slide', desc:'Turn notes into a bullet-point slide outline for Thursday.', tag:'devops'},
-      JOURNAL],
-    Wed: [KOREAN, AIENG, LUNCH,
-      {id:'wed-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
-      REST,
-      {id:'w1', time:[18*60+30,20*60], title:'Polish DevOps slide', desc:'Visuals, formatting, rehearse once out loud — ready before tomorrow 2pm.', tag:'devops'},
-      JOURNAL],
-    Thu: [KOREAN, AIENG, LUNCH,
-      {id:'thu-prep', time:[13*60+30,14*60], title:'Final check before presenting', desc:'Quick look over slides, settle in.', tag:'devops'},
-      {id:'thu-present', time:[14*60,17*60], title:'DevOps presentation', desc:'Present your DevOps topic to the class.', tag:'devops'},
-      REST,
-      {id:'th1', time:[18*60+30,20*60], title:'Research AI Engineering topic', desc:'2-3 sources, rough notes in your own words (not slides yet).', tag:'ai'},
-      JOURNAL],
-    Fri: [KOREAN,
-      {id:'fri-10', time:[10*60,12*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
-      LUNCH,
-      {id:'fri-prep', time:[13*60+30,14*60], title:'Break', desc:'', tag:'class'},
-      {id:'fri-pm', time:[14*60,17*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
-      REST,
-      {id:'f1', time:[18*60+30,20*60], title:'Outline AI Engineering slide', desc:'Turn notes into a bullet-point outline, then a light review of the week.', tag:'ai'},
-      JOURNAL],
-    Sat: [
-      {id:'sa1', time:[9*60,12*60], title:'Polish AI Engineering slide', desc:'Visuals, formatting, final check — DevOps is already done.', tag:'ai'},
-      {id:'sa2', time:[12*60,14*60], title:'Lunch & break', desc:'Step away fully.', tag:'class'},
-      {id:'sa3', time:[14*60,16*60+30], title:'Extra study time', desc:'Catch up or go deeper on whichever topic felt hardest this week.', tag:'devops'},
-      {id:'sa4', time:[16*60+30,22*60], title:'Free time', desc:'Rest, football, whatever recharges you.', tag:'class'}
-    ],
-    Sun: [
-      {id:'su1', time:[9*60,11*60], title:'Korean homework (숙제)', desc:'Then a light review of both topics — explain them out loud.', tag:'korean'},
-      {id:'su2', time:[11*60,14*60], title:'Free / rest', desc:'', tag:'class'},
-      {id:'su3', time:[14*60,16*60], title:'Korean content creation', desc:'Build this month\'s practice material for your students.', tag:'korean'},
-      {id:'su4', time:[16*60+30,16*60+45], title:'Weekly planning (15 min)', desc:'What worked, what did not — plan next week.', tag:'class'},
-      {id:'su5', time:[16*60+45,22*60], title:'Free time', desc:'', tag:'class'}
-    ]
-  };
-
+  const TAG_OPTIONS = [
+    {value:'ai', label:'AI Engineering'},
+    {value:'devops', label:'DevOps'},
+    {value:'korean', label:'Korean'},
+    {value:'class', label:'Class / rest / review'}
+  ];
   const TAG_COLOR = {ai:'#2DD4BF', devops:'#FFA83D', korean:'#FF4D82', personal:'#9B7BFF', class:'#9B7BFF'};
+
+  function defaultSchedule(){
+    // returns a FRESH deep copy every time so per-day edits never bleed into other days
+    const KOREAN  = {id:'korean-am', time:[8*60,10*60], title:'Korean class', desc:'Taught by teacher.', tag:'korean'};
+    const AIENG   = {id:'aieng-am', time:[10*60,12*60], title:'AI Engineering class', desc:'Teacher-led, based on the topics researched for slides.', tag:'ai'};
+    const LUNCH   = {id:'lunch', time:[12*60,13*60+30], title:'Lunch break', desc:'', tag:'class'};
+    const REST    = {id:'rest', time:[17*60,18*60+30], title:'Rest & recharge', desc:'Eat, no screen. Let your brain recover from class.', tag:'class'};
+    const JOURNAL = {id:'journal', time:[20*60,20*60+30], title:'Quick journal', desc:'Write 3 lines: what I learned today.', tag:'class'};
+
+    const raw = {
+      Mon: [KOREAN, AIENG, LUNCH,
+        {id:'mon-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+        REST,
+        {id:'m1', time:[18*60+30,20*60], title:'Research DevOps topic', desc:'2-3 sources, rough notes in your own words — this is presented Thursday.', tag:'devops'},
+        JOURNAL],
+      Tue: [KOREAN, AIENG, LUNCH,
+        {id:'tue-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+        REST,
+        {id:'t1', time:[18*60+30,20*60], title:'Outline DevOps slide', desc:'Turn notes into a bullet-point slide outline for Thursday.', tag:'devops'},
+        JOURNAL],
+      Wed: [KOREAN, AIENG, LUNCH,
+        {id:'wed-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+        REST,
+        {id:'w1', time:[18*60+30,20*60], title:'Polish DevOps slide', desc:'Visuals, formatting, rehearse once out loud — ready before tomorrow 2pm.', tag:'devops'},
+        JOURNAL],
+      Thu: [KOREAN, AIENG, LUNCH,
+        {id:'thu-prep', time:[13*60+30,14*60], title:'Final check before presenting', desc:'Quick look over slides, settle in.', tag:'devops'},
+        {id:'thu-present', time:[14*60,17*60], title:'DevOps presentation', desc:'Present your DevOps topic to the class.', tag:'devops'},
+        REST,
+        {id:'th1', time:[18*60+30,20*60], title:'Research AI Engineering topic', desc:'2-3 sources, rough notes in your own words (not slides yet).', tag:'ai'},
+        JOURNAL],
+      Fri: [KOREAN,
+        {id:'fri-10', time:[10*60,12*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
+        LUNCH,
+        {id:'fri-prep', time:[13*60+30,14*60], title:'Break', desc:'', tag:'class'},
+        {id:'fri-pm', time:[14*60,17*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
+        REST,
+        {id:'f1', time:[18*60+30,20*60], title:'Outline AI Engineering slide', desc:'Turn notes into a bullet-point outline, then a light review of the week.', tag:'ai'},
+        JOURNAL],
+      Sat: [
+        {id:'sa1', time:[9*60,12*60], title:'Polish AI Engineering slide', desc:'Visuals, formatting, final check — DevOps is already done.', tag:'ai'},
+        {id:'sa2', time:[12*60,14*60], title:'Lunch & break', desc:'Step away fully.', tag:'class'},
+        {id:'sa3', time:[14*60,16*60+30], title:'Extra study time', desc:'Catch up or go deeper on whichever topic felt hardest this week.', tag:'devops'},
+        {id:'sa4', time:[16*60+30,22*60], title:'Free time', desc:'Rest, football, whatever recharges you.', tag:'class'}
+      ],
+      Sun: [
+        {id:'su1', time:[9*60,11*60], title:'Korean homework (숙제)', desc:'Then a light review of both topics — explain them out loud.', tag:'korean'},
+        {id:'su2', time:[11*60,14*60], title:'Free / rest', desc:'', tag:'class'},
+        {id:'su3', time:[14*60,16*60], title:'Korean content creation', desc:'Build this month\'s practice material for your students.', tag:'korean'},
+        {id:'su4', time:[16*60+30,16*60+45], title:'Weekly planning (15 min)', desc:'What worked, what did not — plan next week.', tag:'class'},
+        {id:'su5', time:[16*60+45,22*60], title:'Free time', desc:'', tag:'class'}
+      ]
+    };
+    return JSON.parse(JSON.stringify(raw));
+  }
 
   function pad(n){return n.toString().padStart(2,'0');}
   function fmtMin(total){
@@ -425,7 +523,14 @@
     let hh = h%12; if(hh===0) hh=12;
     return hh+':'+pad(m)+' '+ap;
   }
+  function minToTimeInput(total){ return pad(Math.floor(total/60))+':'+pad(total%60); }
+  function timeInputToMin(str){
+    if(!str) return 0;
+    const [h,m] = str.split(':').map(Number);
+    return h*60+m;
+  }
   function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+  function genId(){ return 'blk-'+Math.random().toString(36).slice(2,9); }
 
   let realNow = new Date();
   let jsDay = realNow.getDay();
@@ -434,6 +539,32 @@
 
   let doneMap = {};
   let notifiedIds = new Set();
+  let scheduleCache = {}; // dayName -> array of blocks (override if saved, else default)
+  let scheduleLoaded = {}; // dayName -> bool
+
+  async function getSchedule(dayName){
+    if(scheduleLoaded[dayName]) return scheduleCache[dayName];
+    try{
+      const res = await window.storage.get('schedule-override:'+dayName);
+      scheduleCache[dayName] = (res && res.value) ? JSON.parse(res.value) : defaultSchedule()[dayName];
+    }catch(e){
+      scheduleCache[dayName] = defaultSchedule()[dayName];
+    }
+    scheduleLoaded[dayName] = true;
+    return scheduleCache[dayName];
+  }
+  async function saveSchedule(dayName, blocks){
+    scheduleCache[dayName] = blocks;
+    scheduleLoaded[dayName] = true;
+    try{ await window.storage.set('schedule-override:'+dayName, JSON.stringify(blocks)); }catch(e){}
+  }
+  async function resetSchedule(dayName){
+    const fresh = defaultSchedule()[dayName];
+    scheduleCache[dayName] = fresh;
+    scheduleLoaded[dayName] = true;
+    try{ await window.storage.delete('schedule-override:'+dayName); }catch(e){}
+    return fresh;
+  }
 
   async function loadDone(idx){
     const d = new Date();
@@ -495,13 +626,16 @@
     }
   }
 
-  function renderTimeline(){
+  async function renderTimeline(){
     const dayName = DAYS[selectedIdx];
-    const blocks = schedule[dayName];
     const el = document.getElementById('timeline');
+    const blocks = await getSchedule(dayName);
+    // guard against a fast day-switch racing an older load
+    if(DAYS[selectedIdx] !== dayName) return;
 
     el.style.opacity = '0';
     setTimeout(()=>{
+      if(DAYS[selectedIdx] !== dayName) return;
       el.innerHTML = '';
       const nowMin = currentMinutes();
       blocks.forEach((b,i)=>{
@@ -513,14 +647,20 @@
         row.style.animationDelay = (i*0.04)+'s';
         const tagColor = TAG_COLOR[b.tag]||'#9B7BFF';
         row.innerHTML = `
-          <div class="b-time">${fmtMin(b.time[0])}<br>${fmtMin(b.time[1])}</div>
-          <div class="b-tag" style="background:${tagColor}"></div>
-          <div class="b-body">
-            <p class="b-title">${b.title}</p>
-            ${b.desc? `<p class="b-desc">${b.desc}</p>`:''}
+          <div class="block-top">
+            <span class="b-time">${fmtMin(b.time[0])} – ${fmtMin(b.time[1])}</span>
+            <div class="block-top-right">
+              <span class="b-status ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</span>
+              <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}" title="Mark done">
+            </div>
           </div>
-          <div class="b-status ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</div>
-          <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}">
+          <div class="block-main">
+            <div class="b-tag" style="background:${tagColor}"></div>
+            <div class="b-body">
+              <p class="b-title">${b.title}</p>
+              ${b.desc? `<p class="b-desc">${b.desc}</p>`:''}
+            </div>
+          </div>
         `;
         el.appendChild(row);
       });
@@ -546,9 +686,9 @@
     }, 140);
   }
 
-  function findActiveBlock(){
+  async function findActiveBlock(){
     const dayName = DAYS[todayIdx];
-    const blocks = schedule[dayName];
+    const blocks = await getSchedule(dayName);
     const nowMin = currentMinutes();
     for(const b of blocks){ if(nowMin>=b.time[0] && nowMin<b.time[1]) return b; }
     let next=null;
@@ -557,8 +697,8 @@
   }
 
   let lastActiveId = null;
-  function renderNow(){
-    const active = findActiveBlock();
+  async function renderNow(){
+    const active = await findActiveBlock();
     const dot = document.getElementById('nowDot');
     const activeId = active.idle ? ('idle:'+(active.next?active.next.id:'none')) : active.id;
     const changed = activeId !== lastActiveId;
@@ -635,7 +775,7 @@
     document.getElementById('timeline').scrollIntoView({behavior:'smooth', block:'start'});
   };
 
-  // Theme toggle (light-mode default here is "Candy Shop", dark-mode is "Candy Night")
+  // Theme toggle
   const themeToggleBtn = document.getElementById('themeToggle');
   const themeKnob = document.getElementById('themeKnob');
   function setTheme(theme){
@@ -669,16 +809,17 @@
 
   function checkAlerts(){
     if(!alertsOn) return;
-    const active = findActiveBlock();
-    if(active.idle) return;
-    if(!notifiedIds.has(active.id)){
-      notifiedIds.add(active.id);
-      const msg = 'Time to: '+active.title;
-      showToast('🔔 '+msg);
-      if('Notification' in window && Notification.permission === 'granted'){
-        try{ new Notification('Schedule', {body: msg}); }catch(e){}
+    findActiveBlock().then(active=>{
+      if(active.idle) return;
+      if(!notifiedIds.has(active.id)){
+        notifiedIds.add(active.id);
+        const msg = 'Time to: '+active.title;
+        showToast('🔔 '+msg);
+        if('Notification' in window && Notification.permission === 'granted'){
+          try{ new Notification('Schedule', {body: msg}); }catch(e){}
+        }
       }
-    }
+    });
   }
 
   function tick(){
@@ -692,6 +833,119 @@
   loadDone(selectedIdx);
   tick();
   setInterval(tick, 1000);
+
+  /* ---------------- Settings / schedule editor ---------------- */
+  const overlay = document.getElementById('settingsOverlay');
+  const settingsDayTabsEl = document.getElementById('settingsDayTabs');
+  const settingsBlockListEl = document.getElementById('settingsBlockList');
+  const settingsDayNameEl = document.getElementById('settingsDayName');
+  let editingDayIdx = selectedIdx;
+  let workingBlocks = [];
+
+  function tagOptionsHtml(selected){
+    return TAG_OPTIONS.map(o=>`<option value="${o.value}" ${o.value===selected?'selected':''}>${o.label}</option>`).join('');
+  }
+
+  function renderSettingsDayTabs(){
+    settingsDayTabsEl.innerHTML = '';
+    DAYS.forEach((d,i)=>{
+      const t = document.createElement('div');
+      t.className = 'day-tab'+(i===editingDayIdx?' sel':'');
+      t.textContent = d.toUpperCase();
+      t.onclick = async ()=>{
+        editingDayIdx = i;
+        await loadEditorForDay();
+      };
+      settingsDayTabsEl.appendChild(t);
+    });
+  }
+
+  function renderEditRows(){
+    settingsBlockListEl.innerHTML = '';
+    workingBlocks.forEach((b)=>{
+      const row = document.createElement('div');
+      row.className = 'edit-row';
+      row.dataset.id = b.id;
+      row.innerHTML = `
+        <div class="edit-row-top">
+          <input type="time" class="edit-start" value="${minToTimeInput(b.time[0])}">
+          <span>–</span>
+          <input type="time" class="edit-end" value="${minToTimeInput(b.time[1])}">
+          <select class="edit-tag">${tagOptionsHtml(b.tag)}</select>
+          <button class="edit-delete" title="Delete block">🗑️</button>
+        </div>
+        <input type="text" class="edit-title" placeholder="Title" value="${b.title.replace(/"/g,'&quot;')}">
+        <textarea class="edit-desc" placeholder="Description (optional)">${b.desc||''}</textarea>
+      `;
+      row.querySelector('.edit-delete').onclick = ()=>{
+        workingBlocks = workingBlocks.filter(x=>x.id!==b.id);
+        row.remove();
+      };
+      settingsBlockListEl.appendChild(row);
+    });
+  }
+
+  async function loadEditorForDay(){
+    renderSettingsDayTabs();
+    settingsDayNameEl.textContent = DAYS[editingDayIdx];
+    const blocks = await getSchedule(DAYS[editingDayIdx]);
+    workingBlocks = JSON.parse(JSON.stringify(blocks));
+    renderEditRows();
+  }
+
+  function readRowsIntoWorkingBlocks(){
+    const rows = [...settingsBlockListEl.querySelectorAll('.edit-row')];
+    return rows.map(row=>{
+      const id = row.dataset.id;
+      const start = timeInputToMin(row.querySelector('.edit-start').value);
+      const end = timeInputToMin(row.querySelector('.edit-end').value);
+      const tag = row.querySelector('.edit-tag').value;
+      const title = row.querySelector('.edit-title').value.trim() || 'Untitled block';
+      const desc = row.querySelector('.edit-desc').value.trim();
+      return {id, time:[start, end], tag, title, desc};
+    }).sort((a,b)=>a.time[0]-b.time[0]);
+  }
+
+  document.getElementById('settingsBtn').onclick = async ()=>{
+    editingDayIdx = selectedIdx;
+    await loadEditorForDay();
+    overlay.classList.add('show');
+  };
+  document.getElementById('closeSettings').onclick = ()=>{
+    overlay.classList.remove('show');
+  };
+  overlay.addEventListener('click', (e)=>{
+    if(e.target === overlay) overlay.classList.remove('show');
+  });
+  document.getElementById('addBlockBtn').onclick = ()=>{
+    const rows = settingsBlockListEl.querySelectorAll('.edit-row');
+    let lastEnd = 9*60;
+    if(rows.length){
+      const lastVal = rows[rows.length-1].querySelector('.edit-end').value;
+      lastEnd = timeInputToMin(lastVal);
+    }
+    const newBlock = {id:genId(), time:[lastEnd, lastEnd+60], title:'New block', desc:'', tag:'class'};
+    workingBlocks.push(newBlock);
+    renderEditRows();
+    settingsBlockListEl.scrollTop = settingsBlockListEl.scrollHeight;
+  };
+  document.getElementById('resetDayBtn').onclick = async ()=>{
+    const dayName = DAYS[editingDayIdx];
+    const fresh = await resetSchedule(dayName);
+    workingBlocks = JSON.parse(JSON.stringify(fresh));
+    renderEditRows();
+    showToast('↺ '+dayName+' reset to default');
+    if(dayName === DAYS[selectedIdx]) renderTimeline();
+  };
+  document.getElementById('saveDayBtn').onclick = async ()=>{
+    const dayName = DAYS[editingDayIdx];
+    const blocks = readRowsIntoWorkingBlocks();
+    await saveSchedule(dayName, blocks);
+    workingBlocks = blocks;
+    renderEditRows();
+    showToast('💾 '+dayName+' saved!');
+    if(dayName === DAYS[selectedIdx]) renderTimeline();
+  };
 })();
 </script>
 </body>
