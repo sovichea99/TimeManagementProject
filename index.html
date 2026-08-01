@@ -48,9 +48,6 @@
     width:100%;max-width:100vw;transition:background 0.3s,color 0.3s;-webkit-font-smoothing:antialiased;
     position:relative;
   }
-  /* NOTE: overflow-x:hidden was intentionally removed from html/body — it silently
-     breaks position:sticky on iOS Safari. max-width:100vw on body prevents any
-     horizontal scroll instead. */
   body::before{
     content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.55;
     background-image:
@@ -104,7 +101,6 @@
   }
   html{scroll-behavior:smooth;}
 
-  /* Navbar */
   .navbar{
     position:sticky;top:0;z-index:20;
     background:var(--surface);
@@ -144,10 +140,8 @@
   }
   body.dark-mode .theme-switch .knob{transform:translateX(24px);background:var(--class);}
 
-  /* Section eyebrow */
   .eyebrow{font-family:'Baloo 2',cursive;font-size:13px;letter-spacing:0.4px;color:var(--korean);text-transform:uppercase;margin:0 2px 10px;font-weight:700;}
 
-  /* Now card */
   .now{
     position:relative;
     background:var(--surface);
@@ -198,7 +192,6 @@
   .btn.active{background:var(--korean);border-color:var(--korean);color:#fff;box-shadow:0 4px 0 #C7305F;}
   .btn.small{padding:7px 14px;font-size:12.5px;}
 
-  /* Day tabs — jellybeans */
   .days{display:flex;gap:8px;margin:28px 0 14px;overflow-x:auto;padding:10px 6px;}
   .day-tab{
     flex:1;min-width:42px;text-align:center;
@@ -221,8 +214,6 @@
   .day-tab .today-dot{position:absolute;top:2px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--devops);}
   .day-tab.sel .today-dot{background:#fff;}
 
-  /* Timeline — redesigned as a stacked card (header row / content / done row) so
-     nothing squeezes together on narrow screens like iPhone SE. */
   .timeline{background:transparent;transition:opacity 0.22s ease;display:flex;flex-direction:column;gap:12px;}
   .block{
     background:var(--surface);border:3px solid var(--border-soft);border-radius:20px;
@@ -258,7 +249,6 @@
   .b-title{font-family:'Baloo 2',cursive;font-size:14.5px;font-weight:700;margin:0 0 3px;}
   .b-desc{font-size:12.5px;color:var(--text-lo);line-height:1.5;margin:0;font-weight:600;}
 
-  /* Gumdrop checkbox */
   .chk{
     appearance:none;-webkit-appearance:none;width:22px;height:22px;flex-shrink:0;cursor:pointer;
     border-radius:50%;border:3px solid var(--border-soft);background:var(--surface-2);position:relative;
@@ -275,7 +265,6 @@
   .chk.popped{animation:gumPop 0.4s ease;}
   .confetti-bit{position:fixed;width:6px;height:6px;border-radius:2px;pointer-events:none;z-index:80;animation:confettiBurst 0.6s ease-out forwards;}
 
-  /* toast */
   .toast{
     position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
     background:var(--korean);border:3px solid var(--surface);color:#fff;
@@ -285,7 +274,6 @@
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* legend */
   .legend{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 0;}
   .legend span{
     display:flex;align-items:center;gap:6px;font-family:'Baloo 2',cursive;font-size:11.5px;font-weight:700;
@@ -295,7 +283,6 @@
   .legend span:hover{transform:translateY(-2px) rotate(-1deg);border-color:var(--border);}
   .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.15);}
 
-  /* tips */
   .man{margin-top:30px;background:var(--surface);border:3px dashed var(--border);border-radius:22px;padding:20px 22px;}
   .man h3{font-family:'Baloo 2',cursive;font-size:12.5px;color:var(--korean);margin:0 0 12px;letter-spacing:0.4px;text-transform:uppercase;font-weight:700;}
   .man ul{margin:0;padding:0;list-style:none;}
@@ -306,7 +293,6 @@
 
   .footnote{font-size:11.5px;color:var(--text-lo);margin-top:20px;line-height:1.6;text-align:center;padding:0 8px;font-weight:600;}
 
-  /* Settings modal */
   .modal-overlay{
     position:fixed;inset:0;background:rgba(35,19,49,0.55);z-index:100;
     display:none;align-items:flex-end;justify-content:center;padding:0;
@@ -462,7 +448,6 @@
   const TAG_COLOR = {ai:'#2DD4BF', devops:'#FFA83D', korean:'#FF4D82', personal:'#9B7BFF', class:'#9B7BFF'};
 
   function defaultSchedule(){
-    // returns a FRESH deep copy every time so per-day edits never bleed into other days
     const KOREAN  = {id:'korean-am', time:[8*60,10*60], title:'Korean class', desc:'Taught by teacher.', tag:'korean'};
     const AIENG   = {id:'aieng-am', time:[10*60,12*60], title:'AI Engineering class', desc:'Teacher-led, based on the topics researched for slides.', tag:'ai'};
     const LUNCH   = {id:'lunch', time:[12*60,13*60+30], title:'Lunch break', desc:'', tag:'class'};
@@ -532,6 +517,30 @@
   function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function genId(){ return 'blk-'+Math.random().toString(36).slice(2,9); }
 
+  const LS_PREFIX = 'senji-schedule::';
+  async function storageGet(key){
+    try{
+      if(window.storage){
+        const res = await window.storage.get(key);
+        return res ? res.value : null;
+      }
+    }catch(e){}
+    try{ return localStorage.getItem(LS_PREFIX+key); }catch(e){}
+    return null;
+  }
+  async function storageSet(key, value){
+    try{
+      if(window.storage){ await window.storage.set(key, value, false); return; }
+    }catch(e){}
+    try{ localStorage.setItem(LS_PREFIX+key, value); }catch(e){}
+  }
+  async function storageDelete(key){
+    try{
+      if(window.storage){ await window.storage.delete(key); return; }
+    }catch(e){}
+    try{ localStorage.removeItem(LS_PREFIX+key); }catch(e){}
+  }
+
   let realNow = new Date();
   let jsDay = realNow.getDay();
   let todayIdx = jsDay===0?6:jsDay-1;
@@ -539,14 +548,14 @@
 
   let doneMap = {};
   let notifiedIds = new Set();
-  let scheduleCache = {}; // dayName -> array of blocks (override if saved, else default)
-  let scheduleLoaded = {}; // dayName -> bool
+  let scheduleCache = {};
+  let scheduleLoaded = {};
 
   async function getSchedule(dayName){
     if(scheduleLoaded[dayName]) return scheduleCache[dayName];
     try{
-      const res = await window.storage.get('schedule-override:'+dayName);
-      scheduleCache[dayName] = (res && res.value) ? JSON.parse(res.value) : defaultSchedule()[dayName];
+      const val = await storageGet('schedule-override:'+dayName);
+      scheduleCache[dayName] = val ? JSON.parse(val) : defaultSchedule()[dayName];
     }catch(e){
       scheduleCache[dayName] = defaultSchedule()[dayName];
     }
@@ -556,13 +565,13 @@
   async function saveSchedule(dayName, blocks){
     scheduleCache[dayName] = blocks;
     scheduleLoaded[dayName] = true;
-    try{ await window.storage.set('schedule-override:'+dayName, JSON.stringify(blocks)); }catch(e){}
+    await storageSet('schedule-override:'+dayName, JSON.stringify(blocks));
   }
   async function resetSchedule(dayName){
     const fresh = defaultSchedule()[dayName];
     scheduleCache[dayName] = fresh;
     scheduleLoaded[dayName] = true;
-    try{ await window.storage.delete('schedule-override:'+dayName); }catch(e){}
+    await storageDelete('schedule-override:'+dayName);
     return fresh;
   }
 
@@ -571,8 +580,8 @@
     d.setDate(d.getDate() - (todayIdx - idx));
     const key = 'done:'+dateKey(d);
     try{
-      const res = await window.storage.get(key);
-      doneMap = res && res.value ? JSON.parse(res.value) : {};
+      const val = await storageGet(key);
+      doneMap = val ? JSON.parse(val) : {};
     }catch(e){ doneMap = {}; }
     renderTimeline();
   }
@@ -580,13 +589,49 @@
     const d = new Date();
     d.setDate(d.getDate() - (todayIdx - idx));
     const key = 'done:'+dateKey(d);
-    try{ await window.storage.set(key, JSON.stringify(doneMap)); }catch(e){}
+    await storageSet(key, JSON.stringify(doneMap));
   }
 
   function currentMinutes(){
     const n = new Date();
     return n.getHours()*60+n.getMinutes();
   }
+
+  let audioCtx = null;
+  function getAudioCtx(){
+    if(!audioCtx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      audioCtx = new AC();
+    }
+    return audioCtx;
+  }
+  function playTapSound(freq, duration, type){
+    try{
+      const ctx = getAudioCtx();
+      if(!ctx) return;
+      if(ctx.state === 'suspended'){ ctx.resume(); }
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.16, ctx.currentTime+0.008);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+duration);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime+duration+0.02);
+    }catch(e){}
+  }
+  function tapSound(){ playTapSound(720, 0.09, 'sine'); }
+  function checkSound(checked){
+    if(checked){ playTapSound(880, 0.12, 'triangle'); setTimeout(()=>playTapSound(1180,0.1,'triangle'), 60); }
+    else{ playTapSound(420, 0.08, 'sine'); }
+  }
+  document.addEventListener('click', function(e){
+    const el = e.target.closest('.btn, .icon-btn, .day-tab, .theme-switch, .edit-delete');
+    if(el) tapSound();
+  }, true);
 
   function renderDayTabs(){
     const el = document.getElementById('dayTabs');
@@ -630,7 +675,6 @@
     const dayName = DAYS[selectedIdx];
     const el = document.getElementById('timeline');
     const blocks = await getSchedule(dayName);
-    // guard against a fast day-switch racing an older load
     if(DAYS[selectedIdx] !== dayName) return;
 
     el.style.opacity = '0';
@@ -669,6 +713,7 @@
           const id = e.target.getAttribute('data-id');
           doneMap[id] = e.target.checked;
           saveDone(selectedIdx);
+          checkSound(e.target.checked);
           const row = e.target.closest('.block');
           row.classList.toggle('done', e.target.checked);
           const status = row.querySelector('.b-status');
@@ -775,20 +820,16 @@
     document.getElementById('timeline').scrollIntoView({behavior:'smooth', block:'start'});
   };
 
-  // Theme toggle
   const themeToggleBtn = document.getElementById('themeToggle');
   const themeKnob = document.getElementById('themeKnob');
   function setTheme(theme){
     document.body.classList.toggle('dark-mode', theme === 'dark');
     themeKnob.textContent = theme === 'dark' ? '🌙' : '🍭';
-    try{ window.storage && window.storage.set('theme-pref', theme, false); }catch(e){}
+    storageSet('theme-pref', theme);
   }
   async function initTheme(){
     let theme = null;
-    try{
-      const res = await window.storage.get('theme-pref');
-      theme = res && res.value;
-    }catch(e){}
+    try{ theme = await storageGet('theme-pref'); }catch(e){}
     if(!theme){
       theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
     }
@@ -834,7 +875,6 @@
   tick();
   setInterval(tick, 1000);
 
-  /* ---------------- Settings / schedule editor ---------------- */
   const overlay = document.getElementById('settingsOverlay');
   const settingsDayTabsEl = document.getElementById('settingsDayTabs');
   const settingsBlockListEl = document.getElementById('settingsBlockList');
@@ -872,7 +912,7 @@
           <span>–</span>
           <input type="time" class="edit-end" value="${minToTimeInput(b.time[1])}">
           <select class="edit-tag">${tagOptionsHtml(b.tag)}</select>
-          <button class="edit-delete" title="Delete block">🗑️</button>
+          <button class="edit-delete" title="Delete block">x</button>
         </div>
         <input type="text" class="edit-title" placeholder="Title" value="${b.title.replace(/"/g,'&quot;')}">
         <textarea class="edit-desc" placeholder="Description (optional)">${b.desc||''}</textarea>
@@ -942,9 +982,9 @@
     const blocks = readRowsIntoWorkingBlocks();
     await saveSchedule(dayName, blocks);
     workingBlocks = blocks;
-    renderEditRows();
     showToast('💾 '+dayName+' saved!');
     if(dayName === DAYS[selectedIdx]) renderTimeline();
+    overlay.classList.remove('show');
   };
 })();
 </script>
