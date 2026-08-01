@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Senji Schedule — schedule --watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#10151C;
+    --surface:#171E28;
+    --surface-2:#1D2531;
+    --border:#2A3541;
+    --text-hi:#EDF1F5;
+    --text-lo:#7C8898;
+    --ai:#5FD3C4;
+    --devops:#E8A657;
+    --korean:#E1614F;
+    --personal:#7C9CE8;
+    --done:#6B8F71;
+    color-scheme: dark;
+  }
+  body.light-mode{
+    --bg:#F4F6F8;
+    --surface:#FFFFFF;
+    --surface-2:#EBEEF2;
+    --border:#DCE2E8;
+    --text-hi:#1B222B;
+    --text-lo:#5C6672;
+    --ai:#1A9385;
+    --devops:#B8711F;
+    --korean:#C0432F;
+    --personal:#3F5FC0;
+    --done:#3F7449;
+    color-scheme: light;
+  }
+  *{box-sizing:border-box;}
+  html{width:100%;overflow-x:hidden;scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--text-hi);font-family:'Inter',sans-serif;width:100%;overflow-x:hidden;transition:background 0.25s,color 0.25s;-webkit-font-smoothing:antialiased;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .reveal{opacity:0;animation:fadeUp 0.55s cubic-bezier(.16,1,.3,1) forwards;}
+
+  /* Navbar */
+  .navbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);transition:background 0.25s,border-color 0.25s,box-shadow 0.25s;}
+  .navbar.scrolled{box-shadow:0 4px 16px rgba(0,0,0,0.15);}
+  .navbar-inner{max-width:720px;margin:0 auto;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-hi);}
+  .brand-dot{width:8px;height:8px;border-radius:2px;background:var(--ai);flex-shrink:0;transition:background 0.25s;}
+  .brand b{font-weight:700;}
+  .brand .slash{color:var(--text-lo);font-weight:400;}
+  .navbar-right{display:flex;align-items:center;gap:14px;}
+  .navbar-clock{font-size:12px;color:var(--text-lo);letter-spacing:0.3px;}
+  .theme-switch{width:46px;height:25px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.25s,border-color 0.25s;}
+  .theme-switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--ai);transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),background 0.25s;display:flex;align-items:center;justify-content:center;font-size:10px;}
+  body.light-mode .theme-switch .knob{transform:translateX(21px) rotate(360deg);}
+
+  /* Section eyebrow */
+  .eyebrow{font-size:11px;letter-spacing:1.2px;color:var(--text-lo);text-transform:uppercase;margin:0 2px 10px;font-weight:600;}
+
+  /* Now card */
+  .now{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px 22px 20px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.08);
+    transition:background 0.25s,border-color 0.25s;
+  }
+  .now-label{font-size:11px;letter-spacing:1.2px;color:var(--text-lo);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-weight:600;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ai);position:relative;flex-shrink:0;transition:background 0.25s;}
+  .dot.pulse::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:var(--ai);opacity:0.4;animation:ring 1.6s ease-out infinite;}
+  @keyframes ring{0%{transform:scale(0.6);opacity:0.5;}100%{transform:scale(2.2);opacity:0;}}
+  .now-title{font-size:22px;font-weight:700;margin:0 0 6px;line-height:1.3;letter-spacing:-0.2px;transition:opacity 0.25s;}
+  .now-desc{font-size:13.5px;color:var(--text-lo);line-height:1.55;margin:0 0 18px;transition:opacity 0.25s;}
+  .now-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-lo);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
+  .bar-track{height:5px;background:var(--surface-2);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--ai);border-radius:4px;transition:width 0.6s cubic-bezier(.4,0,.2,1),background 0.25s;}
+
+  .alert-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    background:var(--surface-2);
+    color:var(--text-hi);
+    border:1px solid var(--border);
+    padding:9px 16px;
+    border-radius:22px;
+    cursor:pointer;
+    transition:background 0.2s,border-color 0.2s,color 0.2s,transform 0.15s;
+  }
+  .btn:hover{border-color:var(--ai);transform:translateY(-1px);}
+  .btn:active{transform:translateY(0) scale(0.97);}
+  .btn.active{background:var(--ai);border-color:var(--ai);color:var(--bg);}
+
+  /* Day tabs */
+  .days{display:flex;gap:5px;margin:26px 0 12px;overflow-x:auto;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:11px;position:relative;transition:background 0.25s,border-color 0.25s;}
+  .days-indicator{position:absolute;top:4px;bottom:4px;left:4px;border-radius:8px;background:var(--ai);transition:transform 0.3s cubic-bezier(.4,0,.2,1),width 0.3s cubic-bezier(.4,0,.2,1),background 0.25s;z-index:0;}
+  .day-tab{
+    flex:1;min-width:40px;text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
+    padding:8px 4px;border-radius:8px;border:none;
+    background:transparent;color:var(--text-lo);cursor:pointer;position:relative;z-index:1;
+    transition:color 0.2s;
+  }
+  .day-tab.sel{color:var(--bg);}
+  .day-tab .today-dot{position:absolute;top:3px;right:5px;width:4px;height:4px;border-radius:50%;background:var(--devops);transition:background 0.2s;}
+  .day-tab.sel .today-dot{background:var(--bg);}
+
+
+  /* Timeline */
+  .timeline{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:background 0.25s,border-color 0.25s,opacity 0.2s;}
+  .block{display:flex;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border);align-items:flex-start;transition:background 0.2s,border-color 0.25s,opacity 0.25s;}
+  .block:last-child{border-bottom:none;}
+  .block:hover{background:var(--surface-2);}
+  .block.done{opacity:0.55;}
+  .block.done .b-title{text-decoration:line-through;}
+  .block.run{background:color-mix(in srgb, var(--ai) 8%, transparent);}
+  .block.run:hover{background:color-mix(in srgb, var(--ai) 12%, transparent);}
+  .b-time{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-lo);width:72px;flex-shrink:0;padding-top:2px;white-space:nowrap;line-height:1.6;}
+  .b-tag{width:7px;height:7px;border-radius:2px;margin-top:6px;flex-shrink:0;}
+  .b-body{flex:1;min-width:0;}
+  .b-title{font-size:14px;font-weight:600;margin:0 0 3px;}
+  .b-desc{font-size:12.5px;color:var(--text-lo);line-height:1.5;margin:0;}
+  .b-status{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.4px;flex-shrink:0;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:600;}
+  .b-status.run{color:var(--ai);background:color-mix(in srgb, var(--ai) 15%, transparent);}
+  .b-status.queued{color:var(--text-lo);background:var(--surface-2);}
+  .b-status.done{color:var(--done);background:color-mix(in srgb, var(--done) 15%, transparent);}
+  .chk{width:16px;height:16px;flex-shrink:0;margin-top:3px;cursor:pointer;accent-color:var(--ai);}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
+    background:var(--surface-2);border:1px solid var(--ai);color:var(--text-hi);
+    padding:12px 18px;border-radius:12px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;
+    opacity:0;transition:all 0.35s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,0.3);z-index:50;max-width:90%;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* legend */
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0;}
+  .legend span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-lo);background:var(--surface);border:1px solid var(--border);padding:5px 10px;border-radius:20px;}
+  .legend i{width:7px;height:7px;border-radius:50%;display:inline-block;}
+
+  /* tips */
+  .man{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+  .man h3{font-size:11px;color:var(--text-lo);margin:0 0 12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;}
+  .man ul{margin:0;padding:0;list-style:none;}
+  .man li{font-size:13px;line-height:1.6;color:var(--text-hi);padding:7px 0;border-bottom:1px solid var(--border);}
+  .man li:last-child{border-bottom:none;}
+  .man li b{color:var(--ai);}
+
+  .footnote{font-size:11.5px;color:var(--text-lo);margin-top:18px;line-height:1.6;text-align:center;padding:0 8px;}
+
+  @media(max-width:480px){
+    .now-title{font-size:18px;}
+    .now{padding:18px 16px 16px;border-radius:12px;}
+    .b-time{width:56px;font-size:9.5px;}
+    .b-desc{font-size:11.5px;}
+    .wrap{padding:16px 12px 40px;}
+    .navbar-inner{padding:11px 12px;}
+    .navbar-clock{display:none;}
+    .day-tab{font-size:10px;padding:7px 3px;min-width:34px;}
+    .man li{font-size:12px;}
+    .legend span{font-size:10px;padding:4px 8px;}
+    .alert-row .btn{font-size:12px;padding:8px 14px;}
+    .timeline,.now,.man{border-radius:12px;}
+  }
+  @media(max-width:360px){
+    .b-status{display:none;}
+    .b-time{width:48px;}
+  }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="brand mono"><span class="brand-dot"></span><b>senji</b><span class="slash">/</span>schedule</div>
+    <div class="navbar-right">
+      <span class="navbar-clock mono" id="clock">--:--:--</span>
+      <button class="theme-switch" id="themeToggle" aria-label="Toggle dark and light mode" title="Toggle theme">
+        <span class="knob" id="themeKnob">🌙</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <p class="eyebrow reveal" style="animation-delay:0s">Right now</p>
+  <div class="now reveal" style="animation-delay:0.05s">
+    <div class="now-label"><span class="dot pulse" id="nowDot"></span><span id="nowLabel">RUNNING NOW</span></div>
+    <p class="now-title" id="nowTitle">Loading...</p>
+    <p class="now-desc" id="nowDesc"></p>
+    <div class="now-meta">
+      <span id="nowMeta">--</span>
+      <span id="nowNext">--</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="nowBar" style="width:0%"></div></div>
+    <div class="alert-row">
+      <button class="btn" id="alertBtn">🔔 Enable alerts</button>
+      <button class="btn" id="todayBtn">Jump to today</button>
+    </div>
+  </div>
+
+  <div class="days reveal" id="dayTabs" style="animation-delay:0.1s"><div class="days-indicator" id="daysIndicator"></div></div>
+  <div class="timeline reveal" id="timeline" style="animation-delay:0.15s"></div>
+
+  <div class="legend reveal" style="animation-delay:0.2s">
+    <span><i style="background:#5FD3C4"></i>AI Engineering</span>
+    <span><i style="background:#E8A657"></i>DevOps</span>
+    <span><i style="background:#E1614F"></i>Korean</span>
+    <span><i style="background:#7C8898"></i>Class / rest / review</span>
+  </div>
+
+  <div class="man reveal" style="animation-delay:0.25s">
+    <h3>Golden rules</h3>
+    <ul>
+      <li><b>One subject per block</b> — don't mix, switching costs more than people think</li>
+      <li><b>Timer 25/5</b> — 25 min focus, 5 min break, especially tired weeknights</li>
+      <li><b>Missed a day?</b> Continue the rotation, don't double up tomorrow</li>
+      <li><b>Goal isn't mastery</b> — explain 3–4 key points clearly, that's enough</li>
+    </ul>
+  </div>
+
+  <p class="footnote reveal" style="animation-delay:0.3s">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Your checkmarks are saved automatically for today's date.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+(function(){
+  const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  const KOREAN  = {id:'korean-am', time:[8*60,10*60], title:'Korean class', desc:'Taught by teacher.', tag:'korean'};
+  const AIENG   = {id:'aieng-am', time:[10*60,12*60], title:'AI Engineering class', desc:'Teacher-led, based on the topics researched for slides.', tag:'ai'};
+  const LUNCH   = {id:'lunch', time:[12*60,13*60+30], title:'Lunch break', desc:'', tag:'class'};
+  const REST    = {id:'rest', time:[17*60,18*60+30], title:'Rest & recharge', desc:'Eat, no screen. Let your brain recover from class.', tag:'class'};
+  const JOURNAL = {id:'journal', time:[20*60,20*60+30], title:'Quick journal', desc:'Write 3 lines: what I learned today.', tag:'class'};
+
+  const schedule = {
+    Mon: [KOREAN, AIENG, LUNCH,
+      {id:'mon-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+      REST,
+      {id:'m1', time:[18*60+30,20*60], title:'Research DevOps topic', desc:'2-3 sources, rough notes in your own words — this is presented Thursday.', tag:'devops'},
+      JOURNAL],
+    Tue: [KOREAN, AIENG, LUNCH,
+      {id:'tue-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+      REST,
+      {id:'t1', time:[18*60+30,20*60], title:'Outline DevOps slide', desc:'Turn notes into a bullet-point slide outline for Thursday.', tag:'devops'},
+      JOURNAL],
+    Wed: [KOREAN, AIENG, LUNCH,
+      {id:'wed-pm', time:[13*60+30,17*60], title:'Self-research', desc:'Independent research / prep time at KSHRD.', tag:'devops'},
+      REST,
+      {id:'w1', time:[18*60+30,20*60], title:'Polish DevOps slide', desc:'Visuals, formatting, rehearse once out loud — ready before tomorrow 2pm.', tag:'devops'},
+      JOURNAL],
+    Thu: [KOREAN, AIENG, LUNCH,
+      {id:'thu-prep', time:[13*60+30,14*60], title:'Final check before presenting', desc:'Quick look over slides, settle in.', tag:'devops'},
+      {id:'thu-present', time:[14*60,17*60], title:'DevOps presentation', desc:'Present your DevOps topic to the class.', tag:'devops'},
+      REST,
+      {id:'th1', time:[18*60+30,20*60], title:'Research AI Engineering topic', desc:'2-3 sources, rough notes in your own words (not slides yet).', tag:'ai'},
+      JOURNAL],
+    Fri: [KOREAN,
+      {id:'fri-10', time:[10*60,12*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
+      LUNCH,
+      {id:'fri-prep', time:[13*60+30,14*60], title:'Break', desc:'', tag:'class'},
+      {id:'fri-pm', time:[14*60,17*60], title:'Self-research', desc:'Independent research / prep time.', tag:'ai'},
+      REST,
+      {id:'f1', time:[18*60+30,20*60], title:'Outline AI Engineering slide', desc:'Turn notes into a bullet-point outline, then a light review of the week.', tag:'ai'},
+      JOURNAL],
+    Sat: [
+      {id:'sa1', time:[9*60,12*60], title:'Polish AI Engineering slide', desc:'Visuals, formatting, final check — DevOps is already done.', tag:'ai'},
+      {id:'sa2', time:[12*60,14*60], title:'Lunch & break', desc:'Step away fully.', tag:'class'},
+      {id:'sa3', time:[14*60,16*60+30], title:'Extra study time', desc:'Catch up or go deeper on whichever topic felt hardest this week.', tag:'devops'},
+      {id:'sa4', time:[16*60+30,22*60], title:'Free time', desc:'Rest, football, whatever recharges you.', tag:'class'}
+    ],
+    Sun: [
+      {id:'su1', time:[9*60,11*60], title:'Korean homework (숙제)', desc:'Then a light review of both topics — explain them out loud.', tag:'korean'},
+      {id:'su2', time:[11*60,14*60], title:'Free / rest', desc:'', tag:'class'},
+      {id:'su3', time:[14*60,16*60], title:'Korean content creation', desc:'Build this month\'s practice material for your students.', tag:'korean'},
+      {id:'su4', time:[16*60+30,16*60+45], title:'Weekly planning (15 min)', desc:'What worked, what did not — plan next week.', tag:'class'},
+      {id:'su5', time:[16*60+45,22*60], title:'Free time', desc:'', tag:'class'}
+    ]
+  };
+
+  const TAG_COLOR = {ai:'#5FD3C4', devops:'#E8A657', korean:'#E1614F', personal:'#7C9CE8', class:'#7C8898'};
+
+  function pad(n){return n.toString().padStart(2,'0');}
+  function fmtMin(total){ // minutes since midnight -> "6:30 PM"
+    let h = Math.floor(total/60), m = total%60;
+    const ap = h>=12?'PM':'AM';
+    let hh = h%12; if(hh===0) hh=12;
+    return hh+':'+pad(m)+' '+ap;
+  }
+  function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+
+  let realNow = new Date();
+  let jsDay = realNow.getDay(); // 0 Sun .. 6 Sat
+  let todayIdx = jsDay===0?6:jsDay-1; // 0 Mon .. 6 Sun
+  let selectedIdx = todayIdx;
+
+  let doneMap = {}; // blockId -> bool, for selected date
+  let notifiedIds = new Set();
+
+  async function loadDone(idx){
+    const d = new Date();
+    d.setDate(d.getDate() - (todayIdx - idx)); // approx date for that day this week
+    const key = 'done:'+dateKey(d);
+    try{
+      const res = await window.storage.get(key);
+      doneMap = res && res.value ? JSON.parse(res.value) : {};
+    }catch(e){ doneMap = {}; }
+    renderTimeline();
+  }
+  async function saveDone(idx){
+    const d = new Date();
+    d.setDate(d.getDate() - (todayIdx - idx));
+    const key = 'done:'+dateKey(d);
+    try{ await window.storage.set(key, JSON.stringify(doneMap)); }catch(e){}
+  }
+
+  function currentMinutes(){
+    const n = new Date();
+    return n.getHours()*60+n.getMinutes();
+  }
+
+  function renderDayTabs(){
+    const el = document.getElementById('dayTabs');
+    el.innerHTML = '';
+    DAYS.forEach((d,i)=>{
+      const t = document.createElement('div');
+      t.className = 'day-tab mono'+(i===selectedIdx?' sel':'');
+      t.textContent = d.toUpperCase();
+      if(i===todayIdx){ const dot=document.createElement('div'); dot.className='today-dot'; t.appendChild(dot); }
+      t.onclick = ()=>{ selectedIdx=i; renderDayTabs(); loadDone(i); };
+      el.appendChild(t);
+    });
+  }
+
+  function renderTimeline(){
+    const dayName = DAYS[selectedIdx];
+    const blocks = schedule[dayName];
+    const el = document.getElementById('timeline');
+    el.innerHTML = '';
+    const nowMin = currentMinutes();
+    blocks.forEach(b=>{
+      const isToday = selectedIdx===todayIdx;
+      const isRun = isToday && nowMin>=b.time[0] && nowMin<b.time[1];
+      const isPast = isToday && nowMin>=b.time[1];
+      const isDone = !!doneMap[b.id];
+      const row = document.createElement('div');
+      row.className = 'block'+(isRun?' run':'')+(isDone?' done':'');
+      const tagColor = TAG_COLOR[b.tag]||'#7C8898';
+      row.innerHTML = `
+        <div class="b-time mono">${fmtMin(b.time[0])}<br>${fmtMin(b.time[1])}</div>
+        <div class="b-tag" style="background:${tagColor}"></div>
+        <div class="b-body">
+          <p class="b-title">${b.title}</p>
+          ${b.desc? `<p class="b-desc">${b.desc}</p>`:''}
+        </div>
+        <div class="b-status mono ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</div>
+        <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}">
+      `;
+      el.appendChild(row);
+    });
+    el.querySelectorAll('.chk').forEach(cb=>{
+      cb.addEventListener('change', (e)=>{
+        const id = e.target.getAttribute('data-id');
+        doneMap[id] = e.target.checked;
+        saveDone(selectedIdx);
+        renderTimeline();
+      });
+    });
+  }
+
+  function findActiveBlock(){
+    const dayName = DAYS[todayIdx];
+    const blocks = schedule[dayName];
+    const nowMin = currentMinutes();
+    for(const b of blocks){ if(nowMin>=b.time[0] && nowMin<b.time[1]) return b; }
+    // find next upcoming
+    let next=null;
+    for(const b of blocks){ if(b.time[0]>nowMin){ next=b; break; } }
+    return {idle:true, next};
+  }
+
+  function renderNow(){
+    const active = findActiveBlock();
+    const dot = document.getElementById('nowDot');
+    if(active.idle){
+      dot.classList.remove('pulse');
+      document.getElementById('nowLabel').textContent = 'NOTHING SCHEDULED RIGHT NOW';
+      document.getElementById('nowTitle').textContent = active.next ? 'Next: '+active.next.title : 'Free time — nothing left today';
+      document.getElementById('nowDesc').textContent = active.next ? (active.next.desc||'') : 'Rest well.';
+      document.getElementById('nowMeta').textContent = active.next ? 'starts '+fmtMin(active.next.time[0]) : '';
+      document.getElementById('nowNext').textContent = '';
+      document.getElementById('nowBar').style.width = '0%';
+    } else {
+      dot.classList.add('pulse');
+      document.getElementById('nowLabel').textContent = 'RUNNING NOW';
+      document.getElementById('nowTitle').textContent = active.title;
+      document.getElementById('nowDesc').textContent = active.desc||'';
+      const nowMin = currentMinutes();
+      const total = active.time[1]-active.time[0];
+      const elapsed = nowMin-active.time[0];
+      const remain = active.time[1]-nowMin;
+      document.getElementById('nowMeta').textContent = remain+' min left';
+      document.getElementById('nowNext').textContent = 'ends '+fmtMin(active.time[1]);
+      document.getElementById('nowBar').style.width = Math.min(100,(elapsed/total)*100)+'%';
+    }
+  }
+
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 4500);
+  }
+
+  let alertsOn = false;
+  document.getElementById('alertBtn').onclick = async ()=>{
+    if(!alertsOn){
+      if('Notification' in window && Notification.permission !== 'granted'){
+        try{ await Notification.requestPermission(); }catch(e){}
+      }
+      alertsOn = true;
+      document.getElementById('alertBtn').classList.add('active');
+      document.getElementById('alertBtn').textContent = '🔔 Alerts on';
+      showToast('Alerts on — keep this tab open to get pinged.');
+    } else {
+      alertsOn = false;
+      document.getElementById('alertBtn').classList.remove('active');
+      document.getElementById('alertBtn').textContent = '🔔 Enable alerts';
+    }
+  };
+  document.getElementById('todayBtn').onclick = ()=>{ selectedIdx = todayIdx; renderDayTabs(); loadDone(todayIdx); };
+
+  // Theme toggle
+  const themeToggleBtn = document.getElementById('themeToggle');
+  const themeKnob = document.getElementById('themeKnob');
+  function setTheme(theme){
+    document.body.classList.toggle('light-mode', theme === 'light');
+    themeKnob.textContent = theme === 'light' ? '☀️' : '🌙';
+    try{ window.storage && window.storage.set('theme-pref', theme, false); }catch(e){}
+  }
+  async function initTheme(){
+    let theme = null;
+    try{
+      const res = await window.storage.get('theme-pref');
+      theme = res && res.value;
+    }catch(e){}
+    if(!theme){
+      theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+    }
+    setTheme(theme);
+  }
+  themeToggleBtn.onclick = ()=>{
+    const isLight = document.body.classList.contains('light-mode');
+    setTheme(isLight ? 'dark' : 'light');
+  };
+  initTheme();
+
+  function checkAlerts(){
+    if(!alertsOn) return;
+    const active = findActiveBlock();
+    if(active.idle) return;
+    if(!notifiedIds.has(active.id)){
+      notifiedIds.add(active.id);
+      const msg = 'Time to: '+active.title;
+      showToast('🔔 '+msg);
+      if('Notification' in window && Notification.permission === 'granted'){
+        try{ new Notification('Schedule', {body: msg}); }catch(e){}
+      }
+    }
+  }
+
+  function tick(){
+    const n = new Date();
+    document.getElementById('clock').textContent = pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+    renderNow();
+    if(selectedIdx===todayIdx) renderTimeline();
+    checkAlerts();
+  }
+
+  renderDayTabs();
+  loadDone(selectedIdx);
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
