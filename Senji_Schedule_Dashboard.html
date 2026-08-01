@@ -39,26 +39,52 @@
   }
   *{box-sizing:border-box;}
   html{width:100%;overflow-x:hidden;scroll-behavior:smooth;}
-  body{margin:0;background:var(--bg);color:var(--text-hi);font-family:'Inter',sans-serif;width:100%;overflow-x:hidden;transition:background 0.25s,color 0.25s;-webkit-font-smoothing:antialiased;}
+  body{margin:0;background:var(--bg);color:var(--text-hi);font-family:'Inter',sans-serif;width:100%;overflow-x:hidden;transition:background 0.2s,color 0.2s;-webkit-font-smoothing:antialiased;}
   .mono{font-family:'IBM Plex Mono',monospace;}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px;}
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-  .reveal{opacity:0;animation:fadeUp 0.55s cubic-bezier(.16,1,.3,1) forwards;}
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes fadeInBlock{
+    from{opacity:0;transform:translateY(8px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  @keyframes popIn{
+    0%{transform:scale(1);}
+    35%{transform:scale(0.92);}
+    100%{transform:scale(1);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important;}
+  }
 
   /* Navbar */
-  .navbar{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);transition:background 0.25s,border-color 0.25s,box-shadow 0.25s;}
-  .navbar.scrolled{box-shadow:0 4px 16px rgba(0,0,0,0.15);}
-  .navbar-inner{max-width:720px;margin:0 auto;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .navbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    transition:background 0.35s ease,border-color 0.35s ease,box-shadow 0.35s ease,backdrop-filter 0.35s ease;
+  }
+  .navbar.scrolled{
+    box-shadow:0 8px 24px rgba(0,0,0,0.22);
+    background:color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+  .navbar-inner{max-width:720px;margin:0 auto;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:padding 0.3s ease;}
+  .navbar.scrolled .navbar-inner{padding:10px 16px;}
   .brand{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-hi);}
-  .brand-dot{width:8px;height:8px;border-radius:2px;background:var(--ai);flex-shrink:0;transition:background 0.25s;}
+  .brand-dot{width:8px;height:8px;border-radius:2px;background:var(--ai);flex-shrink:0;transition:transform 0.3s ease;}
+  .navbar.scrolled .brand-dot{transform:scale(0.85);}
   .brand b{font-weight:700;}
   .brand .slash{color:var(--text-lo);font-weight:400;}
   .navbar-right{display:flex;align-items:center;gap:14px;}
   .navbar-clock{font-size:12px;color:var(--text-lo);letter-spacing:0.3px;}
-  .theme-switch{width:46px;height:25px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.25s,border-color 0.25s;}
-  .theme-switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--ai);transition:transform 0.3s cubic-bezier(.34,1.56,.64,1),background 0.25s;display:flex;align-items:center;justify-content:center;font-size:10px;}
-  body.light-mode .theme-switch .knob{transform:translateX(21px) rotate(360deg);}
+  .theme-switch{width:46px;height:25px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.2s,border-color 0.2s;}
+  .theme-switch .knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--ai);transition:transform 0.3s cubic-bezier(.4,1.6,.4,1);display:flex;align-items:center;justify-content:center;font-size:10px;}
+  body.light-mode .theme-switch .knob{transform:translateX(21px);}
 
   /* Section eyebrow */
   .eyebrow{font-size:11px;letter-spacing:1.2px;color:var(--text-lo);text-transform:uppercase;margin:0 2px 10px;font-weight:600;}
@@ -70,17 +96,18 @@
     border-radius:14px;
     padding:22px 22px 20px;
     box-shadow:0 1px 2px rgba(0,0,0,0.08);
-    transition:background 0.25s,border-color 0.25s;
+    animation:fadeInUp 0.5s ease both;
+    transition:background 0.2s ease,border-color 0.2s ease;
   }
   .now-label{font-size:11px;letter-spacing:1.2px;color:var(--text-lo);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-weight:600;}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--ai);position:relative;flex-shrink:0;transition:background 0.25s;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--ai);position:relative;flex-shrink:0;transition:background 0.3s ease;}
   .dot.pulse::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:var(--ai);opacity:0.4;animation:ring 1.6s ease-out infinite;}
   @keyframes ring{0%{transform:scale(0.6);opacity:0.5;}100%{transform:scale(2.2);opacity:0;}}
-  .now-title{font-size:22px;font-weight:700;margin:0 0 6px;line-height:1.3;letter-spacing:-0.2px;transition:opacity 0.25s;}
-  .now-desc{font-size:13.5px;color:var(--text-lo);line-height:1.55;margin:0 0 18px;transition:opacity 0.25s;}
+  .now-title{font-size:22px;font-weight:700;margin:0 0 6px;line-height:1.3;letter-spacing:-0.2px;transition:opacity 0.25s ease;}
+  .now-desc{font-size:13.5px;color:var(--text-lo);line-height:1.55;margin:0 0 18px;transition:opacity 0.25s ease;}
   .now-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-lo);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;}
   .bar-track{height:5px;background:var(--surface-2);border-radius:4px;overflow:hidden;}
-  .bar-fill{height:100%;background:var(--ai);border-radius:4px;transition:width 0.6s cubic-bezier(.4,0,.2,1),background 0.25s;}
+  .bar-fill{height:100%;background:var(--ai);border-radius:4px;transition:width 0.6s cubic-bezier(.4,0,.2,1);}
 
   .alert-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
   .btn{
@@ -93,66 +120,69 @@
     padding:9px 16px;
     border-radius:22px;
     cursor:pointer;
-    transition:background 0.2s,border-color 0.2s,color 0.2s,transform 0.15s;
+    transition:all 0.15s;
   }
   .btn:hover{border-color:var(--ai);transform:translateY(-1px);}
-  .btn:active{transform:translateY(0) scale(0.97);}
+  .btn:active{transform:translateY(0) scale(0.96);}
   .btn.active{background:var(--ai);border-color:var(--ai);color:var(--bg);}
 
   /* Day tabs */
-  .days{display:flex;gap:5px;margin:26px 0 12px;overflow-x:auto;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:11px;position:relative;transition:background 0.25s,border-color 0.25s;}
-  .days-indicator{position:absolute;top:4px;bottom:4px;left:4px;border-radius:8px;background:var(--ai);transition:transform 0.3s cubic-bezier(.4,0,.2,1),width 0.3s cubic-bezier(.4,0,.2,1),background 0.25s;z-index:0;}
+  .days{display:flex;gap:5px;margin:26px 0 12px;overflow-x:auto;padding:4px;background:var(--surface);border:1px solid var(--border);border-radius:11px;animation:fadeInUp 0.5s ease 0.06s both;}
   .day-tab{
     flex:1;min-width:40px;text-align:center;
     font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
     padding:8px 4px;border-radius:8px;border:none;
-    background:transparent;color:var(--text-lo);cursor:pointer;position:relative;z-index:1;
-    transition:color 0.2s;
+    background:transparent;color:var(--text-lo);cursor:pointer;position:relative;
+    transition:background 0.25s ease,color 0.25s ease,transform 0.2s ease;
   }
-  .day-tab.sel{color:var(--bg);}
-  .day-tab .today-dot{position:absolute;top:3px;right:5px;width:4px;height:4px;border-radius:50%;background:var(--devops);transition:background 0.2s;}
+  .day-tab:hover{color:var(--text-hi);}
+  .day-tab.sel{color:var(--bg);background:var(--ai);}
+  .day-tab.pop{animation:popIn 0.3s ease;}
+  .day-tab .today-dot{position:absolute;top:3px;right:5px;width:4px;height:4px;border-radius:50%;background:var(--devops);}
   .day-tab.sel .today-dot{background:var(--bg);}
 
-
   /* Timeline */
-  .timeline{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:background 0.25s,border-color 0.25s,opacity 0.2s;}
-  .block{display:flex;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border);align-items:flex-start;transition:background 0.2s,border-color 0.25s,opacity 0.25s;}
+  .timeline{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;animation:fadeInUp 0.5s ease 0.1s both;transition:opacity 0.22s ease;}
+  .block{display:flex;gap:12px;padding:15px 16px;border-bottom:1px solid var(--border);align-items:flex-start;transition:background 0.25s ease,opacity 0.35s ease,transform 0.3s ease;animation:fadeInBlock 0.4s ease both;}
   .block:last-child{border-bottom:none;}
   .block:hover{background:var(--surface-2);}
   .block.done{opacity:0.55;}
   .block.done .b-title{text-decoration:line-through;}
   .block.run{background:color-mix(in srgb, var(--ai) 8%, transparent);}
-  .block.run:hover{background:color-mix(in srgb, var(--ai) 12%, transparent);}
   .b-time{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-lo);width:72px;flex-shrink:0;padding-top:2px;white-space:nowrap;line-height:1.6;}
-  .b-tag{width:7px;height:7px;border-radius:2px;margin-top:6px;flex-shrink:0;}
+  .b-tag{width:7px;height:7px;border-radius:2px;margin-top:6px;flex-shrink:0;transition:transform 0.2s ease;}
+  .block:hover .b-tag{transform:scale(1.3);}
   .b-body{flex:1;min-width:0;}
-  .b-title{font-size:14px;font-weight:600;margin:0 0 3px;}
+  .b-title{font-size:14px;font-weight:600;margin:0 0 3px;transition:text-decoration-color 0.2s ease;}
   .b-desc{font-size:12.5px;color:var(--text-lo);line-height:1.5;margin:0;}
-  .b-status{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.4px;flex-shrink:0;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:600;}
+  .b-status{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.4px;flex-shrink:0;padding:3px 8px;border-radius:20px;white-space:nowrap;font-weight:600;transition:color 0.25s ease,background 0.25s ease;}
   .b-status.run{color:var(--ai);background:color-mix(in srgb, var(--ai) 15%, transparent);}
   .b-status.queued{color:var(--text-lo);background:var(--surface-2);}
   .b-status.done{color:var(--done);background:color-mix(in srgb, var(--done) 15%, transparent);}
-  .chk{width:16px;height:16px;flex-shrink:0;margin-top:3px;cursor:pointer;accent-color:var(--ai);}
+  .chk{width:16px;height:16px;flex-shrink:0;margin-top:3px;cursor:pointer;accent-color:var(--ai);transition:transform 0.15s ease;}
+  .chk:active{transform:scale(0.85);}
 
   /* toast */
   .toast{
     position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);
     background:var(--surface-2);border:1px solid var(--ai);color:var(--text-hi);
     padding:12px 18px;border-radius:12px;font-size:13px;font-family:'Inter',sans-serif;font-weight:500;
-    opacity:0;transition:all 0.35s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,0.3);z-index:50;max-width:90%;
+    opacity:0;transition:all 0.35s cubic-bezier(.4,0,.2,1);pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,0.3);z-index:50;max-width:90%;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
   /* legend */
-  .legend{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0;}
-  .legend span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-lo);background:var(--surface);border:1px solid var(--border);padding:5px 10px;border-radius:20px;}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0;animation:fadeInUp 0.5s ease 0.14s both;}
+  .legend span{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-lo);background:var(--surface);border:1px solid var(--border);padding:5px 10px;border-radius:20px;transition:transform 0.2s ease,border-color 0.2s ease;}
+  .legend span:hover{transform:translateY(-1px);border-color:var(--ai);}
   .legend i{width:7px;height:7px;border-radius:50%;display:inline-block;}
 
   /* tips */
-  .man{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+  .man{margin-top:28px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;animation:fadeInUp 0.5s ease 0.18s both;}
   .man h3{font-size:11px;color:var(--text-lo);margin:0 0 12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;}
   .man ul{margin:0;padding:0;list-style:none;}
-  .man li{font-size:13px;line-height:1.6;color:var(--text-hi);padding:7px 0;border-bottom:1px solid var(--border);}
+  .man li{font-size:13px;line-height:1.6;color:var(--text-hi);padding:7px 0;border-bottom:1px solid var(--border);transition:padding-left 0.2s ease;}
+  .man li:hover{padding-left:4px;}
   .man li:last-child{border-bottom:none;}
   .man li b{color:var(--ai);}
 
@@ -179,7 +209,7 @@
 </style>
 </head>
 <body>
-<nav class="navbar">
+<nav class="navbar" id="navbar">
   <div class="navbar-inner">
     <div class="brand mono"><span class="brand-dot"></span><b>senji</b><span class="slash">/</span>schedule</div>
     <div class="navbar-right">
@@ -192,8 +222,8 @@
 </nav>
 
 <div class="wrap">
-  <p class="eyebrow reveal" style="animation-delay:0s">Right now</p>
-  <div class="now reveal" style="animation-delay:0.05s">
+  <p class="eyebrow">Right now</p>
+  <div class="now">
     <div class="now-label"><span class="dot pulse" id="nowDot"></span><span id="nowLabel">RUNNING NOW</span></div>
     <p class="now-title" id="nowTitle">Loading...</p>
     <p class="now-desc" id="nowDesc"></p>
@@ -208,17 +238,17 @@
     </div>
   </div>
 
-  <div class="days reveal" id="dayTabs" style="animation-delay:0.1s"><div class="days-indicator" id="daysIndicator"></div></div>
-  <div class="timeline reveal" id="timeline" style="animation-delay:0.15s"></div>
+  <div class="days" id="dayTabs"></div>
+  <div class="timeline" id="timeline"></div>
 
-  <div class="legend reveal" style="animation-delay:0.2s">
+  <div class="legend">
     <span><i style="background:#5FD3C4"></i>AI Engineering</span>
     <span><i style="background:#E8A657"></i>DevOps</span>
     <span><i style="background:#E1614F"></i>Korean</span>
     <span><i style="background:#7C8898"></i>Class / rest / review</span>
   </div>
 
-  <div class="man reveal" style="animation-delay:0.25s">
+  <div class="man">
     <h3>Golden rules</h3>
     <ul>
       <li><b>One subject per block</b> — don't mix, switching costs more than people think</li>
@@ -228,7 +258,7 @@
     </ul>
   </div>
 
-  <p class="footnote reveal" style="animation-delay:0.3s">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Your checkmarks are saved automatically for today's date.</p>
+  <p class="footnote">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Your checkmarks are saved automatically for today's date.</p>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -338,7 +368,14 @@
       t.className = 'day-tab mono'+(i===selectedIdx?' sel':'');
       t.textContent = d.toUpperCase();
       if(i===todayIdx){ const dot=document.createElement('div'); dot.className='today-dot'; t.appendChild(dot); }
-      t.onclick = ()=>{ selectedIdx=i; renderDayTabs(); loadDone(i); };
+      t.onclick = ()=>{
+        if(i===selectedIdx) return;
+        selectedIdx=i;
+        renderDayTabs();
+        loadDone(i);
+        t.classList.add('pop');
+        setTimeout(()=>t.classList.remove('pop'), 300);
+      };
       el.appendChild(t);
     });
   }
@@ -347,36 +384,46 @@
     const dayName = DAYS[selectedIdx];
     const blocks = schedule[dayName];
     const el = document.getElementById('timeline');
-    el.innerHTML = '';
-    const nowMin = currentMinutes();
-    blocks.forEach(b=>{
-      const isToday = selectedIdx===todayIdx;
-      const isRun = isToday && nowMin>=b.time[0] && nowMin<b.time[1];
-      const isPast = isToday && nowMin>=b.time[1];
-      const isDone = !!doneMap[b.id];
-      const row = document.createElement('div');
-      row.className = 'block'+(isRun?' run':'')+(isDone?' done':'');
-      const tagColor = TAG_COLOR[b.tag]||'#7C8898';
-      row.innerHTML = `
-        <div class="b-time mono">${fmtMin(b.time[0])}<br>${fmtMin(b.time[1])}</div>
-        <div class="b-tag" style="background:${tagColor}"></div>
-        <div class="b-body">
-          <p class="b-title">${b.title}</p>
-          ${b.desc? `<p class="b-desc">${b.desc}</p>`:''}
-        </div>
-        <div class="b-status mono ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</div>
-        <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}">
-      `;
-      el.appendChild(row);
-    });
-    el.querySelectorAll('.chk').forEach(cb=>{
-      cb.addEventListener('change', (e)=>{
-        const id = e.target.getAttribute('data-id');
-        doneMap[id] = e.target.checked;
-        saveDone(selectedIdx);
-        renderTimeline();
+
+    // smooth cross-fade when the day's content changes
+    el.style.opacity = '0';
+    setTimeout(()=>{
+      el.innerHTML = '';
+      const nowMin = currentMinutes();
+      blocks.forEach((b,i)=>{
+        const isToday = selectedIdx===todayIdx;
+        const isRun = isToday && nowMin>=b.time[0] && nowMin<b.time[1];
+        const isDone = !!doneMap[b.id];
+        const row = document.createElement('div');
+        row.className = 'block'+(isRun?' run':'')+(isDone?' done':'');
+        row.style.animationDelay = (i*0.035)+'s';
+        const tagColor = TAG_COLOR[b.tag]||'#7C8898';
+        row.innerHTML = `
+          <div class="b-time mono">${fmtMin(b.time[0])}<br>${fmtMin(b.time[1])}</div>
+          <div class="b-tag" style="background:${tagColor}"></div>
+          <div class="b-body">
+            <p class="b-title">${b.title}</p>
+            ${b.desc? `<p class="b-desc">${b.desc}</p>`:''}
+          </div>
+          <div class="b-status mono ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</div>
+          <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}">
+        `;
+        el.appendChild(row);
       });
-    });
+      el.querySelectorAll('.chk').forEach(cb=>{
+        cb.addEventListener('change', (e)=>{
+          const id = e.target.getAttribute('data-id');
+          doneMap[id] = e.target.checked;
+          saveDone(selectedIdx);
+          const row = e.target.closest('.block');
+          row.classList.toggle('done', e.target.checked);
+          const status = row.querySelector('.b-status');
+          status.className = 'b-status mono '+(e.target.checked?'done':'queued');
+          status.textContent = e.target.checked?'DONE':'QUEUED';
+        });
+      });
+      el.style.opacity = '1';
+    }, 140);
   }
 
   function findActiveBlock(){
@@ -384,28 +431,40 @@
     const blocks = schedule[dayName];
     const nowMin = currentMinutes();
     for(const b of blocks){ if(nowMin>=b.time[0] && nowMin<b.time[1]) return b; }
-    // find next upcoming
     let next=null;
     for(const b of blocks){ if(b.time[0]>nowMin){ next=b; break; } }
     return {idle:true, next};
   }
 
+  let lastActiveId = null;
   function renderNow(){
     const active = findActiveBlock();
     const dot = document.getElementById('nowDot');
+    const activeId = active.idle ? ('idle:'+(active.next?active.next.id:'none')) : active.id;
+    const changed = activeId !== lastActiveId;
+    lastActiveId = activeId;
+
+    const titleEl = document.getElementById('nowTitle');
+    const descEl = document.getElementById('nowDesc');
+
+    if(changed){
+      titleEl.style.opacity = '0';
+      descEl.style.opacity = '0';
+    }
+
     if(active.idle){
       dot.classList.remove('pulse');
       document.getElementById('nowLabel').textContent = 'NOTHING SCHEDULED RIGHT NOW';
-      document.getElementById('nowTitle').textContent = active.next ? 'Next: '+active.next.title : 'Free time — nothing left today';
-      document.getElementById('nowDesc').textContent = active.next ? (active.next.desc||'') : 'Rest well.';
+      titleEl.textContent = active.next ? 'Next: '+active.next.title : 'Free time — nothing left today';
+      descEl.textContent = active.next ? (active.next.desc||'') : 'Rest well.';
       document.getElementById('nowMeta').textContent = active.next ? 'starts '+fmtMin(active.next.time[0]) : '';
       document.getElementById('nowNext').textContent = '';
       document.getElementById('nowBar').style.width = '0%';
     } else {
       dot.classList.add('pulse');
       document.getElementById('nowLabel').textContent = 'RUNNING NOW';
-      document.getElementById('nowTitle').textContent = active.title;
-      document.getElementById('nowDesc').textContent = active.desc||'';
+      titleEl.textContent = active.title;
+      descEl.textContent = active.desc||'';
       const nowMin = currentMinutes();
       const total = active.time[1]-active.time[0];
       const elapsed = nowMin-active.time[0];
@@ -413,6 +472,13 @@
       document.getElementById('nowMeta').textContent = remain+' min left';
       document.getElementById('nowNext').textContent = 'ends '+fmtMin(active.time[1]);
       document.getElementById('nowBar').style.width = Math.min(100,(elapsed/total)*100)+'%';
+    }
+
+    if(changed){
+      requestAnimationFrame(()=>{
+        titleEl.style.opacity = '1';
+        descEl.style.opacity = '1';
+      });
     }
   }
 
@@ -439,7 +505,12 @@
       document.getElementById('alertBtn').textContent = '🔔 Enable alerts';
     }
   };
-  document.getElementById('todayBtn').onclick = ()=>{ selectedIdx = todayIdx; renderDayTabs(); loadDone(todayIdx); };
+  document.getElementById('todayBtn').onclick = ()=>{
+    selectedIdx = todayIdx;
+    renderDayTabs();
+    loadDone(todayIdx);
+    document.getElementById('timeline').scrollIntoView({behavior:'smooth', block:'start'});
+  };
 
   // Theme toggle
   const themeToggleBtn = document.getElementById('themeToggle');
@@ -466,6 +537,13 @@
   };
   initTheme();
 
+  const navbarEl = document.getElementById('navbar');
+  function onScroll(){
+    navbarEl.classList.toggle('scrolled', window.scrollY > 4);
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
   function checkAlerts(){
     if(!alertsOn) return;
     const active = findActiveBlock();
@@ -483,8 +561,7 @@
   function tick(){
     const n = new Date();
     document.getElementById('clock').textContent = pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
-    renderNow();
-    if(selectedIdx===todayIdx) renderTimeline();
+    renderNowt();
     checkAlerts();
   }
 
