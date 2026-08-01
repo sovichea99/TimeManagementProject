@@ -431,6 +431,7 @@
     const blocks = schedule[dayName];
     const nowMin = currentMinutes();
     for(const b of blocks){ if(nowMin>=b.time[0] && nowMin<b.time[1]) return b; }
+    // find next upcoming
     let next=null;
     for(const b of blocks){ if(b.time[0]>nowMin){ next=b; break; } }
     return {idle:true, next};
@@ -537,6 +538,7 @@
   };
   initTheme();
 
+  // Sticky navbar scroll effect
   const navbarEl = document.getElementById('navbar');
   function onScroll(){
     navbarEl.classList.toggle('scrolled', window.scrollY > 4);
@@ -561,7 +563,7 @@
   function tick(){
     const n = new Date();
     document.getElementById('clock').textContent = pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
-    renderNowt();
+    renderNow();
     checkAlerts();
   }
 
