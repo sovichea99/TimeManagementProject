@@ -71,8 +71,6 @@
   .display{font-family:'Baloo 2',cursive;}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px;position:relative;z-index:1;}
 
-  /* Lucide icon sizing — icons inherit color via stroke="currentColor" so they
-     theme automatically with light/dark mode, no separate color rules needed. */
   svg.lucide{width:18px;height:18px;stroke-width:2.4;flex-shrink:0;display:block;}
   .icon-btn svg.lucide{width:16px;height:16px;}
   .theme-switch .knob svg.lucide{width:12px;height:12px;stroke-width:2.8;}
@@ -81,7 +79,6 @@
   .man h3 svg.lucide{width:13px;height:13px;vertical-align:-2px;margin-right:4px;stroke-width:2.6;}
   .btn svg.lucide{width:15px;height:15px;}
   .btn{display:inline-flex;align-items:center;gap:6px;}
-  .mascot svg.lucide{width:24px;height:24px;stroke-width:2.2;}
   .timer-btn svg.lucide{width:14px;height:14px;}
   .timer-trigger svg.lucide{width:13px;height:13px;}
   .edit-delete svg.lucide{width:14px;height:14px;}
@@ -157,36 +154,30 @@
   .icon-btn:hover{transform:translateY(-2px) rotate(-6deg);}
   .icon-btn:active{transform:translateY(0) scale(0.92);}
   .theme-switch{
-    width:52px;height:28px;border-radius:20px;background:var(--surface-2);border:2.5px solid var(--border);
+    width:62px;height:36px;border-radius:22px;background:var(--surface-2);border:2.5px solid var(--border);
     position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.2s,border-color 0.2s;
   }
   .theme-switch .knob{
-    position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--korean);color:#fff;
+    position:absolute;top:50%;left:3px;width:26px;height:26px;border-radius:50%;background:var(--korean);color:#fff;
     transition:transform 0.35s cubic-bezier(.68,-0.55,.27,1.55);display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 0 rgba(0,0,0,0.15);line-height:0;
+    box-shadow:0 2px 0 rgba(0,0,0,0.15);line-height:0;transform:translateY(-50%);
   }
-  .theme-switch .knob svg.lucide{display:block;}
+  .theme-switch .knob svg.lucide{display:block;width:15px;height:15px;}
   .theme-switch .knob svg.lucide-moon{transform:translate(0.5px,-0.5px);}
-  body.dark-mode .theme-switch .knob{transform:translateX(24px);background:var(--class);}
+  body.dark-mode .theme-switch .knob{transform:translateY(-50%) translateX(26px);background:var(--class);}
 
   .eyebrow{font-family:'Baloo 2',cursive;font-size:13px;letter-spacing:0.4px;color:var(--korean);text-transform:uppercase;margin:0 2px 10px;font-weight:700;display:flex;align-items:center;}
 
   .now{
     position:relative;
-    background:var(--surface);
+    background:linear-gradient(150deg, var(--surface), var(--surface-2));
     border:4px solid var(--border);
-    border-radius:28px;
-    padding:24px 26px 22px;
+    border-radius:32px;
+    padding:26px 26px 22px;
     box-shadow:0 8px 0 rgba(var(--shadow-tint),0.35), 0 14px 26px rgba(var(--shadow-tint),0.18);
     animation:bounceIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
     overflow:visible;
   }
-  .now::before, .now::after{
-    content:'';position:absolute;top:50%;width:22px;height:34px;background:var(--border);
-    transform:translateY(-50%);
-  }
-  .now::before{left:-14px;clip-path:polygon(100% 0,0 50%,100% 100%);border-radius:6px 0 0 6px;}
-  .now::after{right:-14px;clip-path:polygon(0 0,100% 50%,0 100%);border-radius:0 6px 6px 0;}
   .now-label{font-family:'Baloo 2',cursive;font-size:12.5px;letter-spacing:0.4px;color:var(--text-lo);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-weight:700;}
   .dot{width:12px;height:12px;border-radius:50%;background:var(--ai);position:relative;flex-shrink:0;box-shadow:0 0 0 3px var(--surface-2);}
   .dot.pulse::after{content:'';position:absolute;inset:-5px;border-radius:50%;background:var(--ai);opacity:0.45;animation:ring 1.4s ease-out infinite;}
@@ -338,20 +329,53 @@
   .streak-badge .flame-ic{display:flex;color:var(--devops);}
   .streak-badge.lit .flame-ic{animation:floatSway 1.4s ease-in-out infinite;}
 
-  .mascot{
-    position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;
-    background:var(--surface);border:3px solid var(--border);box-shadow:0 4px 0 var(--border-soft), 0 8px 20px rgba(var(--shadow-tint),0.3);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--korean);
-    animation:floatSway 3s ease-in-out infinite;transition:transform 0.2s ease;
+  .greeting{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;animation:bounceIn 0.55s cubic-bezier(.34,1.56,.64,1) both;}
+  .greeting-text{flex:1;min-width:0;}
+  .greeting-eyebrow{font-family:'Baloo 2',cursive;font-size:11px;letter-spacing:0.6px;color:var(--text-lo);text-transform:uppercase;font-weight:700;margin:0 0 4px;}
+  .greeting-headline{font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;margin:0 0 1px;line-height:1.2;color:var(--text-hi);}
+  .name-edit{cursor:pointer;transition:color 0.2s;}
+  .name-edit:hover{color:var(--korean);}
+  .greeting-name-input{
+    font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;background:var(--surface-2);
+    border:2px solid var(--border);border-radius:10px;padding:1px 8px;color:var(--text-hi);width:150px;max-width:50vw;
   }
-  .mascot:active{transform:scale(0.9);}
-  .mascot-bubble{
-    position:fixed;right:18px;bottom:84px;z-index:60;max-width:220px;background:var(--surface);
-    border:3px solid var(--border);border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:12.5px;
-    font-weight:600;color:var(--text-hi);box-shadow:0 6px 18px rgba(var(--shadow-tint),0.3);
-    opacity:0;transform:translateY(8px) scale(0.95);pointer-events:none;transition:all 0.25s cubic-bezier(.34,1.56,.64,1);
+  .greeting-mascot-wrap{position:relative;flex-shrink:0;width:92px;height:92px;cursor:pointer;}
+  .greeting-mascot-wrap svg{width:100%;height:100%;animation:floatSway 3.4s ease-in-out infinite;}
+  .greeting-bubble{
+    position:absolute;top:20%;right:100%;margin-right:2px;width:min(230px,68vw);background:var(--surface);
+    border:3px solid var(--border);border-radius:16px;padding:8px 12px;font-size:11.5px;font-weight:600;
+    color:var(--text-hi);box-shadow:0 6px 16px rgba(var(--shadow-tint),0.3);opacity:0;
+    transform:translate(10px,-50%) scale(0.92);pointer-events:none;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);z-index:5;
   }
-  .mascot-bubble.show{opacity:1;transform:translateY(0) scale(1);}
+  .greeting-bubble.show{opacity:1;transform:translate(0,-50%) scale(1);}
+
+  @keyframes blink{0%,90%,100%{transform:scaleY(1);}95%{transform:scaleY(0.12);}}
+  #eyesOpen{transform-box:fill-box;transform-origin:center;animation:blink 4.6s ease-in-out infinite;}
+  @keyframes armWave{0%,100%{transform:rotate(0deg);}30%{transform:rotate(-24deg);}60%{transform:rotate(10deg);}}
+  #armRight{transform-box:fill-box;transform-origin:top center;}
+  #armRight.waving{animation:armWave 0.9s ease-in-out 2;}
+  @keyframes sunSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  #accSun{transform-box:fill-box;transform-origin:center;animation:sunSpin 20s linear infinite;}
+  @keyframes sparkleFloat{0%,100%{transform:translateY(0) scale(1);opacity:0.8;}50%{transform:translateY(-4px) scale(1.15);opacity:1;}}
+  #accSparkle .spark{transform-box:fill-box;transform-origin:center;animation:sparkleFloat 2.2s ease-in-out infinite;}
+  #accSparkle .spark:nth-child(2){animation-delay:0.4s;}
+  #accSparkle .spark:nth-child(3){animation-delay:0.8s;}
+  @keyframes glowPulse{0%,100%{opacity:0.16;transform:scale(1);}50%{opacity:0.32;transform:scale(1.06);}}
+  #accGlow{transform-box:fill-box;transform-origin:center;animation:glowPulse 2.8s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:0.25;}50%{opacity:1;}}
+  #accNight .star{transform-box:fill-box;transform-origin:center;animation:twinkle 1.8s ease-in-out infinite;}
+  #accNight .star:nth-child(3){animation-delay:0.6s;}
+  @keyframes zzzFloat{0%{transform:translate(0,0);opacity:0;}18%{opacity:1;}100%{transform:translate(8px,-22px);opacity:0;}}
+  #accNight .zz{transform-box:fill-box;transform-origin:center;animation:zzzFloat 2.6s ease-in infinite;}
+  #accNight .zz:nth-child(5){animation-delay:1s;}
+
+  @media(max-width:480px){
+    .greeting{gap:10px;margin-bottom:18px;}
+    .greeting-headline{font-size:17px;}
+    .greeting-name-input{font-size:17px;width:110px;}
+    .greeting-mascot-wrap{width:66px;height:66px;}
+  }
+
 
   .timer-card{
     position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;
@@ -434,8 +458,7 @@
 
   @media(max-width:480px){
     .now-title{font-size:19px;}
-    .now{padding:20px 16px 18px;border-radius:22px;}
-    .now::before,.now::after{width:16px;height:26px;}
+    .now{padding:20px 16px 18px;border-radius:24px;}
     .b-desc{font-size:11.5px;}
     .wrap{padding:16px 12px 40px;}
     .navbar-inner{padding:10px 10px;gap:6px;}
@@ -448,17 +471,14 @@
     .navbar-clock{display:none;}
     .icon-btn{width:34px;height:34px;}
     .icon-btn svg.lucide{width:15px;height:15px;}
-    .theme-switch{width:46px;height:25px;}
-    .theme-switch .knob{width:17px;height:17px;}
-    .theme-switch .knob svg.lucide{width:11px;height:11px;}
-    body.dark-mode .theme-switch .knob{transform:translateX(21px);}
+    .theme-switch{width:54px;height:31px;}
+    .theme-switch .knob{width:23px;height:23px;}
+    .theme-switch .knob svg.lucide{width:13px;height:13px;}
+    body.dark-mode .theme-switch .knob{transform:translateY(-50%) translateX(21px);}
     .day-tab{font-size:10px;padding:8px 3px;min-width:34px;}
     .man li{font-size:12px;}
     .legend span{font-size:10px;padding:5px 9px;}
     .alert-row .btn{font-size:12.5px;padding:8px 15px;}
-    .mascot{width:46px;height:46px;right:12px;bottom:12px;}
-    .mascot svg.lucide{width:20px;height:20px;}
-    .mascot-bubble{right:12px;bottom:66px;max-width:180px;}
     .timer-card{padding:12px 16px;gap:10px;bottom:12px;}
     .timer-clock{font-size:21px;min-width:66px;}
   }
@@ -470,7 +490,7 @@
 <body>
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
-    <div class="brand"><span class="brand-dot"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><line x1="9" y1="5" x2="9" y2="19"></line><line x1="15" y1="5" x2="15" y2="19"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg></span><b class="display">senji</b><span class="slash">/</span>schedule</div>
+    <div class="brand"><span class="brand-dot"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><line x1="9" y1="5" x2="9" y2="19"></line><line x1="15" y1="5" x2="15" y2="19"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg></span><b class="display">Senji</b><span class="slash">/</span>schedule</div>
     <div class="navbar-right">
       <span class="streak-badge" id="streakBadge" title="Your streak"><span class="flame-ic"><i data-lucide="flame"></i></span><span id="streakCount">0</span></span>
       <span class="navbar-clock" id="clock">--:--:--</span>
@@ -484,7 +504,65 @@
 </nav>
 
 <div class="wrap">
-  <p class="eyebrow"><i data-lucide="sparkles"></i>&nbsp;Right now</p>
+  <div class="greeting" id="greetingCard">
+    <div class="greeting-text">
+      <p class="greeting-eyebrow" id="greetingTimeLabel">MORNING VIBES</p>
+      <h1 class="greeting-headline"><span id="greetingGreetWord">Good morning</span>, <span id="greetingName" class="name-edit" title="Tap to rename">Sovichea</span>!</h1>
+    </div>
+    <div class="greeting-mascot-wrap" id="greetingMascotWrap" title="Tap me!">
+      <div class="greeting-bubble" id="greetingBubble"></div>
+      <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+        <g id="accSun" style="display:none">
+          <circle cx="70" cy="68" r="10" fill="var(--devops)" opacity="0.9"/>
+          <g stroke="var(--devops)" stroke-width="3" stroke-linecap="round" opacity="0.8">
+            <line x1="70" y1="44" x2="70" y2="36"/>
+            <line x1="70" y1="92" x2="70" y2="100"/>
+            <line x1="44" y1="68" x2="36" y2="68"/>
+            <line x1="92" y1="68" x2="100" y2="68"/>
+            <line x1="52" y1="50" x2="46" y2="44"/>
+            <line x1="88" y1="50" x2="94" y2="44"/>
+            <line x1="52" y1="86" x2="46" y2="92"/>
+            <line x1="88" y1="86" x2="94" y2="92"/>
+          </g>
+        </g>
+        <g id="accSparkle" style="display:none">
+          <path class="spark" d="M28 38 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2Z" fill="var(--ai)"/>
+          <path class="spark" d="M110 32 l2 5 5 2 -5 2 -2 5 -2-5 -5-2 5-2Z" fill="var(--korean)"/>
+          <path class="spark" d="M118 76 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6-4 -4-1.6 4-1.6Z" fill="var(--class)"/>
+        </g>
+        <g id="accGlow" style="display:none">
+          <circle cx="70" cy="80" r="48" fill="var(--korean)"/>
+        </g>
+        <g id="accNight" style="display:none">
+          <path d="M100 38a14 14 0 1 0 10 22 18 18 0 0 1-10-22Z" fill="var(--class)" opacity="0.9"/>
+          <circle class="star" cx="32" cy="34" r="2" fill="var(--text-hi)"/>
+          <circle class="star" cx="46" cy="50" r="1.6" fill="var(--text-hi)"/>
+          <circle class="star" cx="26" cy="56" r="1.4" fill="var(--text-hi)"/>
+          <text class="zz" x="98" y="28" font-family="'Baloo 2',cursive" font-size="11" fill="var(--text-lo)" font-weight="700">Z</text>
+          <text class="zz" x="104" y="18" font-family="'Baloo 2',cursive" font-size="9" fill="var(--text-lo)" font-weight="700">Z</text>
+        </g>
+        <ellipse id="armLeft" cx="34" cy="88" rx="10" ry="16" fill="var(--korean)"/>
+        <ellipse id="armRight" cx="106" cy="88" rx="10" ry="16" fill="var(--korean)"/>
+        <line x1="70" y1="48" x2="70" y2="34" stroke="var(--border)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="70" cy="30" r="7" fill="var(--ai)"/>
+        <ellipse cx="70" cy="82" rx="38" ry="34" fill="var(--korean)"/>
+        <ellipse cx="56" cy="66" rx="12" ry="8" fill="#fff" opacity="0.22"/>
+        <g id="eyesOpen">
+          <circle cx="58" cy="78" r="6" fill="var(--text-hi)"/>
+          <circle cx="82" cy="78" r="6" fill="var(--text-hi)"/>
+        </g>
+        <g id="eyesSleepy" style="display:none">
+          <path d="M52,78 Q58,73 64,78" stroke="var(--text-hi)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+          <path d="M76,78 Q82,73 88,78" stroke="var(--text-hi)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        </g>
+        <ellipse cx="52" cy="90" rx="7" ry="4" fill="#fff" opacity="0.35"/>
+        <ellipse cx="88" cy="90" rx="7" ry="4" fill="#fff" opacity="0.35"/>
+        <path id="mouthHappy" d="M58,90 Q70,102 82,90" stroke="var(--text-hi)" stroke-width="3.4" stroke-linecap="round" fill="none" style="display:none"/>
+        <path id="mouthNeutral" d="M60,92 Q70,97 80,92" stroke="var(--text-hi)" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+  </div>
+
   <div class="now">
     <div class="now-label"><span class="dot pulse" id="nowDot"></span><span id="nowLabel">RUNNING NOW</span></div>
     <p class="now-title" id="nowTitle">Loading...</p>
@@ -540,9 +618,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<div class="mascot-bubble" id="mascotBubble"></div>
-<div class="mascot" id="mascot" title="Tap me!"><i data-lucide="smile"></i></div>
 
 <div class="timer-card" id="timerCard">
   <div>
@@ -652,10 +727,6 @@
   function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function genId(){ return 'blk-'+Math.random().toString(36).slice(2,9); }
 
-  /* ---------------- Persistence layer ----------------
-     Tries Claude.ai's window.storage first (works when previewed inside Claude).
-     Falls back to localStorage — this is what actually persists when this file
-     is self-hosted (nginx/python server/etc), which is the real deployment case. */
   const LS_PREFIX = 'senji-schedule::';
   async function storageGet(key){
     try{
@@ -905,7 +976,7 @@
             spawnConfetti(rect.left+rect.width/2, rect.top+rect.height/2);
           }
           if(selectedIdx===todayIdx){ checkForPerfectDay(); }
-          refreshMascot();
+          renderGreeting(false);
         });
       });
       el.style.opacity = '1';
@@ -1060,7 +1131,6 @@
   tick();
   setInterval(tick, 1000);
 
-  /* ---------------- Streak tracking ---------------- */
   async function isDateAllDone(dateStr, dayName){
     const blocks = await getSchedule(dayName);
     let map = {};
@@ -1133,17 +1203,25 @@
   };
   updateStreakBadge();
 
-  /* ---------------- Mascot ---------------- */
-  const mascotEl = document.getElementById('mascot');
-  const mascotBubble = document.getElementById('mascotBubble');
-  const MASCOT_MESSAGES = {
-    sleepy: ['Getting late — rest well 😴', 'Shh, quiet hours 🌙'],
-    happy: ['You are on track today! 🤗', 'Look at you go! ✨', 'Loving this streak 🔥'],
-    encourage: ['A few things slipped — it is okay, keep moving 💪', 'Missed one? No big deal, next block is fresh 🍬'],
-    neutral: ['Hi Senji! 👋', 'One block at a time 🍭', 'You got this 🌟']
+  const GREETING_TEXT = {
+    morning:{label:'MORNING VIBES', greet:'Good morning'},
+    afternoon:{label:'AFTERNOON GRIND', greet:'Good afternoon'},
+    evening:{label:'EVENING WIND-DOWN', greet:'Good evening'},
+    night:{label:'LATE NIGHT OWL', greet:'Good night'}
   };
-  const MASCOT_ICON = {sleepy:'moon', happy:'laugh', encourage:'heart', neutral:'smile'};
-  async function computeMascotState(){
+  const COMPANION_QUIP = {
+    sleepy:['Zzz... five more minutes?', 'The stars are out — so is my energy.'],
+    happy:['Streak status: unstoppable.', "You're absolutely crushing it!"],
+    encourage:['Chin up — tomorrow is a fresh rotation.', 'Progress, not perfection, okay?'],
+    neutral:['Poke me anytime for a pep talk.', 'Candy-powered focus, activate!']
+  };
+  function timeBucket(hour){
+    if(hour>=5 && hour<12) return 'morning';
+    if(hour>=12 && hour<17) return 'afternoon';
+    if(hour>=17 && hour<22) return 'evening';
+    return 'night';
+  }
+  async function computeCompanionState(){
     const hour = new Date().getHours();
     if(hour >= 22 || hour < 6) return 'sleepy';
     const dayName = DAYS[todayIdx];
@@ -1155,23 +1233,83 @@
     if(missedCount > 0) return 'encourage';
     return 'happy';
   }
-  async function refreshMascot(){
-    const state = await computeMascotState();
-    mascotEl.innerHTML = `<i data-lucide="${MASCOT_ICON[state]}"></i>`;
-    mascotEl.dataset.state = state;
-    refreshIcons();
-  }
-  mascotEl.onclick = async ()=>{
-    const state = mascotEl.dataset.state || 'neutral';
-    const msgs = MASCOT_MESSAGES[state] || MASCOT_MESSAGES.neutral;
-    mascotBubble.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-    mascotBubble.classList.add('show');
-    setTimeout(()=>mascotBubble.classList.remove('show'), 2600);
-  };
-  refreshMascot();
-  setInterval(refreshMascot, 60000);
+  let lastGreetingBucket = null;
+  async function renderGreeting(replayWave){
+    const hour = new Date().getHours();
+    const bucket = timeBucket(hour);
+    const state = await computeCompanionState();
+    const info = GREETING_TEXT[bucket];
 
-  /* ---------------- Focus timer (25/5) ---------------- */
+    document.getElementById('greetingTimeLabel').textContent = info.label;
+    document.getElementById('greetingGreetWord').textContent = info.greet;
+
+    ['accSun','accSparkle','accGlow','accNight'].forEach(id=>{
+      document.getElementById(id).style.display = 'none';
+    });
+    const accMap = {morning:'accSun', afternoon:'accSparkle', evening:'accGlow', night:'accNight'};
+    document.getElementById(accMap[bucket]).style.display = 'block';
+
+    const sleepyLook = state === 'sleepy';
+    document.getElementById('eyesOpen').style.display = sleepyLook ? 'none' : 'block';
+    document.getElementById('eyesSleepy').style.display = sleepyLook ? 'block' : 'none';
+    document.getElementById('mouthHappy').style.display = state === 'happy' ? 'block' : 'none';
+    document.getElementById('mouthNeutral').style.display = state === 'happy' ? 'none' : 'block';
+
+    if(replayWave || bucket !== lastGreetingBucket){
+      const arm = document.getElementById('armRight');
+      arm.classList.remove('waving');
+      void arm.offsetWidth;
+      arm.classList.add('waving');
+    }
+    lastGreetingBucket = bucket;
+  }
+  document.getElementById('greetingMascotWrap').addEventListener('click', async ()=>{
+    await renderGreeting(true);
+    const state = await computeCompanionState();
+    const quips = COMPANION_QUIP[state] || COMPANION_QUIP.neutral;
+    const bubble = document.getElementById('greetingBubble');
+    bubble.textContent = quips[Math.floor(Math.random()*quips.length)];
+    bubble.classList.add('show');
+    setTimeout(()=>bubble.classList.remove('show'), 2600);
+  });
+
+  function attachNameEdit(span){
+    span.addEventListener('click', function handler(){
+      const current = span.textContent;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = current;
+      input.className = 'greeting-name-input';
+      input.maxLength = 24;
+      span.replaceWith(input);
+      input.focus();
+      input.select();
+      function commit(){
+        const val = input.value.trim() || 'Friend';
+        storageSet('display-name', val);
+        const newSpan = document.createElement('span');
+        newSpan.id = 'greetingName';
+        newSpan.className = 'name-edit';
+        newSpan.title = 'Tap to rename';
+        newSpan.textContent = val;
+        input.replaceWith(newSpan);
+        attachNameEdit(newSpan);
+      }
+      input.addEventListener('blur', commit, {once:true});
+      input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') input.blur(); });
+    });
+  }
+  async function initGreetingName(){
+    let name = null;
+    try{ name = await storageGet('display-name'); }catch(e){}
+    const span = document.getElementById('greetingName');
+    span.textContent = name || 'Sovichea';
+    attachNameEdit(span);
+  }
+  initGreetingName();
+  renderGreeting(true);
+  setInterval(()=>renderGreeting(false), 60000);
+
   const timerCard = document.getElementById('timerCard');
   const timerClockEl = document.getElementById('timerClock');
   const timerPhaseEl = document.getElementById('timerPhase');
@@ -1232,7 +1370,6 @@
   };
   renderTimerClock();
 
-  /* ---------------- Swipe gestures ---------------- */
   (function(){
     const timelineEl = document.getElementById('timeline');
     let touchStartX = 0, touchStartY = 0, touching = false;
@@ -1257,7 +1394,6 @@
     }, {passive:true});
   })();
 
-  /* ---------------- Weekly stats ---------------- */
   const statsOverlay = document.getElementById('statsOverlay');
   const statsRowEl = document.getElementById('statsRow');
   async function renderStats(){
