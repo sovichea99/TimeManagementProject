@@ -4,9 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Senji Schedule — schedule --watch</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF4D82">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Schedule">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
 <style>
   :root{
@@ -63,6 +71,24 @@
   .display{font-family:'Baloo 2',cursive;}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 56px;position:relative;z-index:1;}
 
+  /* Lucide icon sizing — icons inherit color via stroke="currentColor" so they
+     theme automatically with light/dark mode, no separate color rules needed. */
+  svg.lucide{width:18px;height:18px;stroke-width:2.4;flex-shrink:0;display:block;}
+  .icon-btn svg.lucide{width:16px;height:16px;}
+  .theme-switch .knob svg.lucide{width:12px;height:12px;stroke-width:2.8;}
+  .streak-badge svg.lucide{width:14px;height:14px;}
+  .eyebrow svg.lucide{width:13px;height:13px;vertical-align:-2px;margin-right:3px;stroke-width:2.6;}
+  .man h3 svg.lucide{width:13px;height:13px;vertical-align:-2px;margin-right:4px;stroke-width:2.6;}
+  .btn svg.lucide{width:15px;height:15px;}
+  .btn{display:inline-flex;align-items:center;gap:6px;}
+  .mascot svg.lucide{width:24px;height:24px;stroke-width:2.2;}
+  .timer-btn svg.lucide{width:14px;height:14px;}
+  .timer-trigger svg.lucide{width:13px;height:13px;}
+  .edit-delete svg.lucide{width:14px;height:14px;}
+  .modal-header h2 svg.lucide{width:17px;height:17px;vertical-align:-3px;margin-right:4px;stroke-width:2.6;}
+  .footnote svg.lucide{width:13px;height:13px;vertical-align:-2px;margin:0 1px;stroke-width:2.6;}
+  .toast svg.lucide{width:16px;height:16px;}
+
   @keyframes bounceIn{
     0%{opacity:0;transform:translateY(24px) scale(0.9);}
     60%{opacity:1;transform:translateY(-4px) scale(1.02);}
@@ -115,16 +141,17 @@
   .brand{display:flex;align-items:center;gap:8px;font-size:17px;color:var(--text-hi);min-width:0;}
   .brand-dot{
     width:26px;height:26px;flex-shrink:0;border-radius:50% 50% 50% 10%;
-    background:var(--korean);display:flex;align-items:center;justify-content:center;font-size:14px;
+    background:var(--korean);display:flex;align-items:center;justify-content:center;color:#fff;
     animation:floatSway 2.4s ease-in-out infinite;box-shadow:0 3px 0 rgba(var(--shadow-tint),0.4);
   }
+  .brand-dot svg.lucide{width:14px;height:14px;stroke-width:2.6;}
   .brand b{font-family:'Baloo 2',cursive;font-weight:800;letter-spacing:0.2px;}
   .brand .slash{color:var(--text-lo);font-weight:600;}
   .navbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
   .navbar-clock{font-family:'Baloo 2',cursive;font-size:13px;color:var(--text-lo);letter-spacing:0.3px;background:var(--surface-2);padding:5px 10px;border-radius:20px;}
   .icon-btn{
     width:36px;height:36px;border-radius:50%;background:var(--surface-2);border:2.5px solid var(--border);
-    display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;color:var(--text-hi);
     transition:transform 0.15s ease,background 0.2s;
   }
   .icon-btn:hover{transform:translateY(-2px) rotate(-6deg);}
@@ -134,13 +161,15 @@
     position:relative;cursor:pointer;flex-shrink:0;padding:0;transition:background 0.2s,border-color 0.2s;
   }
   .theme-switch .knob{
-    position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--korean);
-    transition:transform 0.35s cubic-bezier(.68,-0.55,.27,1.55);display:flex;align-items:center;justify-content:center;font-size:11px;
-    box-shadow:0 2px 0 rgba(0,0,0,0.15);
+    position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--korean);color:#fff;
+    transition:transform 0.35s cubic-bezier(.68,-0.55,.27,1.55);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 0 rgba(0,0,0,0.15);line-height:0;
   }
+  .theme-switch .knob svg.lucide{display:block;}
+  .theme-switch .knob svg.lucide-moon{transform:translate(0.5px,-0.5px);}
   body.dark-mode .theme-switch .knob{transform:translateX(24px);background:var(--class);}
 
-  .eyebrow{font-family:'Baloo 2',cursive;font-size:13px;letter-spacing:0.4px;color:var(--korean);text-transform:uppercase;margin:0 2px 10px;font-weight:700;}
+  .eyebrow{font-family:'Baloo 2',cursive;font-size:13px;letter-spacing:0.4px;color:var(--korean);text-transform:uppercase;margin:0 2px 10px;font-weight:700;display:flex;align-items:center;}
 
   .now{
     position:relative;
@@ -232,10 +261,16 @@
   .b-status{
     font-family:'Baloo 2',cursive;font-size:9.5px;letter-spacing:0.3px;padding:4px 10px;border-radius:20px;
     white-space:nowrap;font-weight:700;transition:color 0.25s ease,background 0.25s ease;flex-shrink:0;
+    display:inline-flex;align-items:center;gap:4px;
   }
+  .b-status svg.lucide{width:10px;height:10px;stroke-width:3;}
   .b-status.run{color:#fff;background:var(--korean);}
   .b-status.queued{color:var(--text-lo);background:var(--surface-2);}
   .b-status.done{color:#fff;background:var(--done);}
+  .b-status.missed{color:#fff;background:var(--devops);}
+  .block.missed{border-color:var(--devops);}
+  .chk:disabled{cursor:not-allowed;opacity:0.45;box-shadow:none;}
+  .chk:disabled:hover{border-color:var(--border-soft);}
 
   .block-main{display:flex;gap:10px;align-items:flex-start;}
   .b-tag{
@@ -271,6 +306,7 @@
     padding:12px 20px;border-radius:20px;font-size:13.5px;font-family:'Baloo 2',cursive;font-weight:700;
     opacity:0;transition:all 0.35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
     box-shadow:0 6px 0 #C7305F, 0 10px 24px rgba(0,0,0,0.25);z-index:90;max-width:90%;
+    display:flex;align-items:center;gap:8px;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -281,10 +317,10 @@
     transition:transform 0.2s ease,border-color 0.2s ease;
   }
   .legend span:hover{transform:translateY(-2px) rotate(-1deg);border-color:var(--border);}
-  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.15);}
+  .legend i.dot-swatch{width:9px;height:9px;border-radius:50%;display:inline-block;box-shadow:inset 0 -2px 0 rgba(0,0,0,0.15);}
 
   .man{margin-top:30px;background:var(--surface);border:3px dashed var(--border);border-radius:22px;padding:20px 22px;}
-  .man h3{font-family:'Baloo 2',cursive;font-size:12.5px;color:var(--korean);margin:0 0 12px;letter-spacing:0.4px;text-transform:uppercase;font-weight:700;}
+  .man h3{font-family:'Baloo 2',cursive;font-size:12.5px;color:var(--korean);margin:0 0 12px;letter-spacing:0.4px;text-transform:uppercase;font-weight:700;display:flex;align-items:center;}
   .man ul{margin:0;padding:0;list-style:none;}
   .man li{font-size:13.5px;line-height:1.6;color:var(--text-hi);padding:8px 0;border-bottom:2px dotted var(--border-soft);font-weight:600;transition:padding-left 0.2s ease;}
   .man li:hover{padding-left:5px;}
@@ -292,6 +328,54 @@
   .man li b{font-family:'Baloo 2',cursive;color:var(--korean);}
 
   .footnote{font-size:11.5px;color:var(--text-lo);margin-top:20px;line-height:1.6;text-align:center;padding:0 8px;font-weight:600;}
+
+  .streak-badge{
+    display:flex;align-items:center;gap:4px;font-family:'Baloo 2',cursive;font-size:12.5px;font-weight:700;
+    color:var(--text-hi);background:var(--surface-2);padding:5px 10px 5px 8px;border-radius:20px;
+    border:2px solid var(--border-soft);cursor:pointer;transition:transform 0.15s ease;flex-shrink:0;
+  }
+  .streak-badge:hover{transform:translateY(-1px);}
+  .streak-badge .flame-ic{display:flex;color:var(--devops);}
+  .streak-badge.lit .flame-ic{animation:floatSway 1.4s ease-in-out infinite;}
+
+  .mascot{
+    position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;
+    background:var(--surface);border:3px solid var(--border);box-shadow:0 4px 0 var(--border-soft), 0 8px 20px rgba(var(--shadow-tint),0.3);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--korean);
+    animation:floatSway 3s ease-in-out infinite;transition:transform 0.2s ease;
+  }
+  .mascot:active{transform:scale(0.9);}
+  .mascot-bubble{
+    position:fixed;right:18px;bottom:84px;z-index:60;max-width:220px;background:var(--surface);
+    border:3px solid var(--border);border-radius:16px 16px 4px 16px;padding:10px 14px;font-size:12.5px;
+    font-weight:600;color:var(--text-hi);box-shadow:0 6px 18px rgba(var(--shadow-tint),0.3);
+    opacity:0;transform:translateY(8px) scale(0.95);pointer-events:none;transition:all 0.25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .mascot-bubble.show{opacity:1;transform:translateY(0) scale(1);}
+
+  .timer-card{
+    position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;
+    background:var(--surface);border:4px solid var(--border);border-radius:24px;
+    padding:16px 22px;box-shadow:0 10px 28px rgba(var(--shadow-tint),0.35);
+    display:none;align-items:center;gap:16px;
+  }
+  .timer-card.show{display:flex;}
+  .timer-phase{font-family:'Baloo 2',cursive;font-size:11px;color:var(--text-lo);text-transform:uppercase;letter-spacing:0.4px;}
+  .timer-clock{font-family:'Baloo 2',cursive;font-size:26px;font-weight:700;color:var(--korean);min-width:82px;}
+  .timer-btns{display:flex;gap:6px;}
+  .timer-btn{
+    width:34px;height:34px;border-radius:50%;background:var(--surface-2);border:2px solid var(--border);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-hi);
+  }
+
+  .stats-row{display:flex;align-items:flex-end;gap:8px;height:140px;padding:10px 4px 4px;}
+  .stats-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px;}
+  .stats-bar{width:70%;border-radius:8px 8px 4px 4px;background:var(--ai);min-height:6px;transition:height 0.5s cubic-bezier(.4,0,.2,1);}
+  .stats-label{font-family:'Baloo 2',cursive;font-size:10.5px;color:var(--text-lo);font-weight:700;}
+  .stats-pct{font-family:'Baloo 2',cursive;font-size:10px;color:var(--text-hi);font-weight:700;}
+
+  .timeline.swiping{transition:transform 0.2s ease, opacity 0.2s ease;}
+
 
   .modal-overlay{
     position:fixed;inset:0;background:rgba(35,19,49,0.55);z-index:100;
@@ -316,7 +400,7 @@
     position:sticky;top:0;z-index:10;background:var(--bg);padding:20px 0 12px;margin:0 0 12px;
     border-bottom:3px dashed var(--border-soft);
   }
-  .modal-header h2{font-family:'Baloo 2',cursive;font-size:19px;margin:0;}
+  .modal-header h2{font-family:'Baloo 2',cursive;font-size:19px;margin:0;display:flex;align-items:center;}
   .modal-day-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 10px;margin-bottom:8px;}
   .modal-day-tabs .day-tab{animation:none;}
   .modal-body{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
@@ -342,11 +426,11 @@
   }
   .edit-delete{
     margin-left:auto;background:var(--surface-2);border:2px solid var(--border-soft);border-radius:10px;
-    width:32px;height:32px;flex-shrink:0;cursor:pointer;font-size:13px;
+    width:32px;height:32px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-hi);
   }
   .edit-delete:hover{border-color:var(--korean);}
   .modal-footer{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;}
-  .modal-footer .btn{flex:1;min-width:120px;}
+  .modal-footer .btn{flex:1;min-width:120px;justify-content:center;}
 
   @media(max-width:480px){
     .now-title{font-size:19px;}
@@ -354,31 +438,53 @@
     .now::before,.now::after{width:16px;height:26px;}
     .b-desc{font-size:11.5px;}
     .wrap{padding:16px 12px 40px;}
-    .navbar-inner{padding:10px 12px;}
+    .navbar-inner{padding:10px 10px;gap:6px;}
+    .brand{font-size:14px;gap:6px;}
+    .brand .slash{display:none;}
+    .brand-dot{width:24px;height:24px;}
+    .brand-dot svg.lucide{width:13px;height:13px;}
+    .navbar-right{gap:6px;}
+    .streak-badge{font-size:12px;padding:5px 9px 5px 7px;}
     .navbar-clock{display:none;}
+    .icon-btn{width:34px;height:34px;}
+    .icon-btn svg.lucide{width:15px;height:15px;}
+    .theme-switch{width:46px;height:25px;}
+    .theme-switch .knob{width:17px;height:17px;}
+    .theme-switch .knob svg.lucide{width:11px;height:11px;}
+    body.dark-mode .theme-switch .knob{transform:translateX(21px);}
     .day-tab{font-size:10px;padding:8px 3px;min-width:34px;}
     .man li{font-size:12px;}
     .legend span{font-size:10px;padding:5px 9px;}
     .alert-row .btn{font-size:12.5px;padding:8px 15px;}
+    .mascot{width:46px;height:46px;right:12px;bottom:12px;}
+    .mascot svg.lucide{width:20px;height:20px;}
+    .mascot-bubble{right:12px;bottom:66px;max-width:180px;}
+    .timer-card{padding:12px 16px;gap:10px;bottom:12px;}
+    .timer-clock{font-size:21px;min-width:66px;}
+  }
+  @media(max-width:360px){
+    .navbar-clock{display:none;}
   }
 </style>
 </head>
 <body>
 <nav class="navbar" id="navbar">
   <div class="navbar-inner">
-    <div class="brand"><span class="brand-dot">🍫</span><b class="display">Sovichea</b><span class="slash">/</span>schedule</div>
+    <div class="brand"><span class="brand-dot"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><line x1="9" y1="5" x2="9" y2="19"></line><line x1="15" y1="5" x2="15" y2="19"></line><line x1="3" y1="12" x2="21" y2="12"></line></svg></span><b class="display">senji</b><span class="slash">/</span>schedule</div>
     <div class="navbar-right">
+      <span class="streak-badge" id="streakBadge" title="Your streak"><span class="flame-ic"><i data-lucide="flame"></i></span><span id="streakCount">0</span></span>
       <span class="navbar-clock" id="clock">--:--:--</span>
-      <button class="icon-btn" id="settingsBtn" title="Edit schedule" aria-label="Edit schedule">⚙️</button>
+      <button class="icon-btn" id="statsBtn" title="Weekly stats" aria-label="Weekly stats"><i data-lucide="bar-chart-3"></i></button>
+      <button class="icon-btn" id="settingsBtn" title="Edit schedule" aria-label="Edit schedule"><i data-lucide="settings"></i></button>
       <button class="theme-switch" id="themeToggle" aria-label="Toggle dark and light mode" title="Toggle theme">
-        <span class="knob" id="themeKnob">🍭</span>
+        <span class="knob" id="themeKnob"><i data-lucide="sun"></i></span>
       </button>
     </div>
   </div>
 </nav>
 
 <div class="wrap">
-  <p class="eyebrow">✨ Right now</p>
+  <p class="eyebrow"><i data-lucide="sparkles"></i>&nbsp;Right now</p>
   <div class="now">
     <div class="now-label"><span class="dot pulse" id="nowDot"></span><span id="nowLabel">RUNNING NOW</span></div>
     <p class="now-title" id="nowTitle">Loading...</p>
@@ -389,8 +495,8 @@
     </div>
     <div class="bar-track"><div class="bar-fill" id="nowBar" style="width:0%"></div></div>
     <div class="alert-row">
-      <button class="btn" id="alertBtn">🔔 Enable alerts</button>
-      <button class="btn" id="todayBtn">🎯 Jump to today</button>
+      <button class="btn" id="alertBtn"><i data-lucide="bell"></i><span class="btn-label">Enable alerts</span></button>
+      <button class="btn" id="todayBtn"><i data-lucide="target"></i><span>Jump to today</span></button>
     </div>
   </div>
 
@@ -398,14 +504,14 @@
   <div class="timeline" id="timeline"></div>
 
   <div class="legend">
-    <span><i style="background:#2DD4BF"></i>AI Engineering</span>
-    <span><i style="background:#FFA83D"></i>DevOps</span>
-    <span><i style="background:#FF4D82"></i>Korean</span>
-    <span><i style="background:#9B7BFF"></i>Class / rest / review</span>
+    <span><i class="dot-swatch" style="background:#2DD4BF"></i>AI Engineering</span>
+    <span><i class="dot-swatch" style="background:#FFA83D"></i>DevOps</span>
+    <span><i class="dot-swatch" style="background:#FF4D82"></i>Korean</span>
+    <span><i class="dot-swatch" style="background:#9B7BFF"></i>Class / rest / review</span>
   </div>
 
   <div class="man">
-    <h3>🍩 Golden rules</h3>
+    <h3><i data-lucide="list-checks"></i>&nbsp;Golden rules</h3>
     <ul>
       <li><b>One subject per block</b> — don't mix, switching costs more than people think</li>
       <li><b>Timer 25/5</b> — 25 min focus, 5 min break, especially tired weeknights</li>
@@ -414,26 +520,53 @@
     </ul>
   </div>
 
-  <p class="footnote">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Tap the ⚙️ to edit any day's blocks.</p>
+  <p class="footnote">Alerts fire only while this tab stays open in your browser — it's not a background phone notification. Tap the <i data-lucide="settings" style="display:inline"></i> icon to edit any day's blocks.</p>
 </div>
 
 <div class="modal-overlay" id="settingsOverlay">
   <div class="modal-card">
     <div class="modal-header">
-      <h2 class="display">Edit <span id="settingsDayName">Mon</span>'s schedule</h2>
-      <button class="icon-btn" id="closeSettings" aria-label="Close">✕</button>
+      <h2 class="display"><i data-lucide="calendar-cog"></i>Edit <span id="settingsDayName">Mon</span>'s schedule</h2>
+      <button class="icon-btn" id="closeSettings" aria-label="Close"><i data-lucide="x"></i></button>
     </div>
     <div class="modal-day-tabs" id="settingsDayTabs"></div>
     <div class="modal-body" id="settingsBlockList"></div>
-    <button class="btn small" id="addBlockBtn" style="margin-bottom:14px;width:100%;">➕ Add block</button>
+    <button class="btn small" id="addBlockBtn" style="margin-bottom:14px;width:100%;justify-content:center;"><i data-lucide="plus"></i><span>Add block</span></button>
     <div class="modal-footer">
-      <button class="btn" id="resetDayBtn">↺ Reset day</button>
-      <button class="btn active" id="saveDayBtn">Save changes</button>
+      <button class="btn" id="resetDayBtn"><i data-lucide="rotate-ccw"></i><span>Reset day</span></button>
+      <button class="btn active" id="saveDayBtn"><i data-lucide="save"></i><span>Save changes</span></button>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="mascot-bubble" id="mascotBubble"></div>
+<div class="mascot" id="mascot" title="Tap me!"><i data-lucide="smile"></i></div>
+
+<div class="timer-card" id="timerCard">
+  <div>
+    <div class="timer-phase" id="timerPhase">Focus</div>
+    <div class="timer-clock" id="timerClock">25:00</div>
+  </div>
+  <div class="timer-btns">
+    <button class="timer-btn" id="timerStartPause"><i data-lucide="play"></i></button>
+    <button class="timer-btn" id="timerReset"><i data-lucide="rotate-ccw"></i></button>
+    <button class="timer-btn" id="timerClose"><i data-lucide="x"></i></button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="statsOverlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2 class="display"><i data-lucide="bar-chart-3"></i>Last 7 days</h2>
+      <button class="icon-btn" id="closeStats" aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="stats-row" id="statsRow"></div>
+    <p class="footnote" style="margin-top:8px;">Each bar shows the percent of that day's blocks you checked off.</p>
+  </div>
+</div>
+
 
 
 <script>
@@ -446,6 +579,8 @@
     {value:'class', label:'Class / rest / review'}
   ];
   const TAG_COLOR = {ai:'#2DD4BF', devops:'#FFA83D', korean:'#FF4D82', personal:'#9B7BFF', class:'#9B7BFF'};
+
+  function refreshIcons(){ try{ if(window.lucide) lucide.createIcons(); }catch(e){} }
 
   function defaultSchedule(){
     const KOREAN  = {id:'korean-am', time:[8*60,10*60], title:'Korean class', desc:'Taught by teacher.', tag:'korean'};
@@ -517,6 +652,10 @@
   function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
   function genId(){ return 'blk-'+Math.random().toString(36).slice(2,9); }
 
+  /* ---------------- Persistence layer ----------------
+     Tries Claude.ai's window.storage first (works when previewed inside Claude).
+     Falls back to localStorage — this is what actually persists when this file
+     is self-hosted (nginx/python server/etc), which is the real deployment case. */
   const LS_PREFIX = 'senji-schedule::';
   async function storageGet(key){
     try{
@@ -671,6 +810,11 @@
     }
   }
 
+  function statusIconSvgTag(status){
+    const icon = status==='run' ? 'play' : status==='done' ? 'check' : status==='missed' ? 'alert-circle' : 'clock';
+    return `<i data-lucide="${icon}"></i>`;
+  }
+
   async function renderTimeline(){
     const dayName = DAYS[selectedIdx];
     const el = document.getElementById('timeline');
@@ -684,18 +828,42 @@
       const nowMin = currentMinutes();
       blocks.forEach((b,i)=>{
         const isToday = selectedIdx===todayIdx;
+        const isFuture = isToday && nowMin < b.time[0];
         const isRun = isToday && nowMin>=b.time[0] && nowMin<b.time[1];
-        const isDone = !!doneMap[b.id];
+        const isPast = isToday && nowMin>=b.time[1];
+        const explicit = doneMap[b.id];
+
+        let isDone, status, lockedFuture;
+        if(isFuture){
+          isDone = false;
+          status = 'queued';
+          lockedFuture = true;
+        } else if(isPast){
+          isDone = explicit === false ? false : true;
+          status = isDone ? 'done' : 'missed';
+          lockedFuture = false;
+        } else if(isRun){
+          isDone = !!explicit;
+          status = isDone ? 'done' : 'run';
+          lockedFuture = false;
+        } else {
+          isDone = !!explicit;
+          status = isDone ? 'done' : 'queued';
+          lockedFuture = false;
+        }
+
         const row = document.createElement('div');
-        row.className = 'block'+(isRun?' run':'')+(isDone?' done':'');
+        row.className = 'block'+(status==='run'?' run':'')+(isDone?' done':'')+(status==='missed'?' missed':'');
         row.style.animationDelay = (i*0.04)+'s';
         const tagColor = TAG_COLOR[b.tag]||'#9B7BFF';
+        const statusLabel = status==='run' ? 'RUNNING' : (status==='done' ? 'DONE' : (status==='missed' ? 'MISSED' : 'QUEUED'));
         row.innerHTML = `
           <div class="block-top">
             <span class="b-time">${fmtMin(b.time[0])} – ${fmtMin(b.time[1])}</span>
             <div class="block-top-right">
-              <span class="b-status ${isRun?'run':(isDone?'done':'queued')}">${isRun?'● RUNNING':(isDone?'DONE':'QUEUED')}</span>
-              <input type="checkbox" class="chk" ${isDone?'checked':''} data-id="${b.id}" title="Mark done">
+              <span class="b-status ${status}">${statusIconSvgTag(status)}${statusLabel}</span>
+              ${status==='run' ? `<button class="icon-btn timer-trigger" style="width:26px;height:26px;" title="Start 25/5 focus timer"><i data-lucide="timer"></i></button>` : ''}
+              <input type="checkbox" class="chk" ${isDone?'checked':''} ${lockedFuture?'disabled':''} data-id="${b.id}" title="${lockedFuture?'Starts at '+fmtMin(b.time[0]):'Mark done'}">
             </div>
           </div>
           <div class="block-main">
@@ -706,9 +874,11 @@
             </div>
           </div>
         `;
+        const timerBtn = row.querySelector('.timer-trigger');
+        if(timerBtn){ timerBtn.onclick = ()=> openTimer(); }
         el.appendChild(row);
       });
-      el.querySelectorAll('.chk').forEach(cb=>{
+      el.querySelectorAll('.chk:not([disabled])').forEach(cb=>{
         cb.addEventListener('change', (e)=>{
           const id = e.target.getAttribute('data-id');
           doneMap[id] = e.target.checked;
@@ -716,18 +886,30 @@
           checkSound(e.target.checked);
           const row = e.target.closest('.block');
           row.classList.toggle('done', e.target.checked);
+          row.classList.remove('missed');
           const status = row.querySelector('.b-status');
-          status.className = 'b-status '+(e.target.checked?'done':'queued');
-          status.textContent = e.target.checked?'DONE':'QUEUED';
+          if(e.target.checked){
+            status.className = 'b-status done';
+            status.innerHTML = statusIconSvgTag('done')+'DONE';
+          } else {
+            const wasRun = row.classList.contains('run');
+            status.className = 'b-status '+(wasRun?'run':'missed');
+            status.innerHTML = statusIconSvgTag(wasRun?'run':'missed')+(wasRun?'RUNNING':'MISSED');
+            row.classList.toggle('missed', !wasRun);
+          }
+          refreshIcons();
           e.target.classList.add('popped');
           setTimeout(()=>e.target.classList.remove('popped'), 400);
           if(e.target.checked){
             const rect = e.target.getBoundingClientRect();
             spawnConfetti(rect.left+rect.width/2, rect.top+rect.height/2);
           }
+          if(selectedIdx===todayIdx){ checkForPerfectDay(); }
+          refreshMascot();
         });
       });
       el.style.opacity = '1';
+      refreshIcons();
     }, 140);
   }
 
@@ -790,27 +972,29 @@
     }
   }
 
-  function showToast(msg){
+  function showToast(msg, icon){
     const t = document.getElementById('toast');
-    t.textContent = msg;
+    t.innerHTML = (icon ? `<i data-lucide="${icon}"></i>` : '') + `<span>${msg}</span>`;
+    refreshIcons();
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'), 4500);
   }
 
   let alertsOn = false;
   document.getElementById('alertBtn').onclick = async ()=>{
+    const label = document.querySelector('#alertBtn .btn-label');
     if(!alertsOn){
       if('Notification' in window && Notification.permission !== 'granted'){
         try{ await Notification.requestPermission(); }catch(e){}
       }
       alertsOn = true;
       document.getElementById('alertBtn').classList.add('active');
-      document.getElementById('alertBtn').textContent = '🔔 Alerts on';
-      showToast('Alerts on — keep this tab open to get pinged!');
+      label.textContent = 'Alerts on';
+      showToast('Alerts on — keep this tab open to get pinged!', 'bell-ring');
     } else {
       alertsOn = false;
       document.getElementById('alertBtn').classList.remove('active');
-      document.getElementById('alertBtn').textContent = '🔔 Enable alerts';
+      label.textContent = 'Enable alerts';
     }
   };
   document.getElementById('todayBtn').onclick = ()=>{
@@ -824,7 +1008,8 @@
   const themeKnob = document.getElementById('themeKnob');
   function setTheme(theme){
     document.body.classList.toggle('dark-mode', theme === 'dark');
-    themeKnob.textContent = theme === 'dark' ? '🌙' : '🍭';
+    themeKnob.innerHTML = theme === 'dark' ? '<i data-lucide="moon"></i>' : '<i data-lucide="sun"></i>';
+    refreshIcons();
     storageSet('theme-pref', theme);
   }
   async function initTheme(){
@@ -855,7 +1040,7 @@
       if(!notifiedIds.has(active.id)){
         notifiedIds.add(active.id);
         const msg = 'Time to: '+active.title;
-        showToast('🔔 '+msg);
+        showToast(msg, 'bell');
         if('Notification' in window && Notification.permission === 'granted'){
           try{ new Notification('Schedule', {body: msg}); }catch(e){}
         }
@@ -874,6 +1059,239 @@
   loadDone(selectedIdx);
   tick();
   setInterval(tick, 1000);
+
+  /* ---------------- Streak tracking ---------------- */
+  async function isDateAllDone(dateStr, dayName){
+    const blocks = await getSchedule(dayName);
+    let map = {};
+    try{ const val = await storageGet('done:'+dateStr); map = val ? JSON.parse(val) : {}; }catch(e){}
+    if(!blocks.length) return false;
+    return blocks.every(b => !!map[b.id]);
+  }
+  async function getPerfectDays(){
+    try{ const val = await storageGet('perfect-days'); return val ? JSON.parse(val) : []; }catch(e){ return []; }
+  }
+  async function savePerfectDays(arr){ await storageSet('perfect-days', JSON.stringify(arr)); }
+
+  function shiftDateStr(baseDate, deltaDays){
+    const d = new Date(baseDate);
+    d.setDate(d.getDate()+deltaDays);
+    return dateKey(d);
+  }
+
+  async function computeStreak(){
+    const perfectDays = await getPerfectDays();
+    const set = new Set(perfectDays);
+    const today = new Date();
+    const todayStr = dateKey(today);
+    let anchor = set.has(todayStr) ? 0 : -1;
+    if(anchor === -1 && !set.has(shiftDateStr(today,-1))) return 0;
+    let streak = 0;
+    let i = anchor;
+    while(set.has(shiftDateStr(today, i))){
+      streak++;
+      i--;
+    }
+    return streak;
+  }
+
+  async function updateStreakBadge(){
+    const streak = await computeStreak();
+    const el = document.getElementById('streakCount');
+    const badge = document.getElementById('streakBadge');
+    if(el) el.textContent = streak;
+    if(badge) badge.classList.toggle('lit', streak > 0);
+  }
+
+  async function checkForPerfectDay(){
+    const todayStr = dateKey(new Date());
+    const dayName = DAYS[todayIdx];
+    const allDone = await isDateAllDone(todayStr, dayName);
+    const perfectDays = await getPerfectDays();
+    if(allDone && !perfectDays.includes(todayStr)){
+      perfectDays.push(todayStr);
+      await savePerfectDays(perfectDays);
+      const streak = await computeStreak();
+      showToast('Perfect day! '+streak+'-day streak!', 'party-popper');
+      const nowCard = document.querySelector('.now');
+      if(nowCard){
+        const rect = nowCard.getBoundingClientRect();
+        spawnConfetti(rect.left+rect.width*0.3, rect.top+20);
+        spawnConfetti(rect.left+rect.width*0.7, rect.top+20);
+      }
+      updateStreakBadge();
+    } else if(!allDone && perfectDays.includes(todayStr)){
+      const idx = perfectDays.indexOf(todayStr);
+      perfectDays.splice(idx,1);
+      await savePerfectDays(perfectDays);
+      updateStreakBadge();
+    }
+  }
+  document.getElementById('streakBadge').onclick = async ()=>{
+    const streak = await computeStreak();
+    showToast(streak>0 ? (streak+'-day streak — keep it going!') : 'No streak yet — finish a full day to start one!', 'flame');
+  };
+  updateStreakBadge();
+
+  /* ---------------- Mascot ---------------- */
+  const mascotEl = document.getElementById('mascot');
+  const mascotBubble = document.getElementById('mascotBubble');
+  const MASCOT_MESSAGES = {
+    sleepy: ['Getting late — rest well 😴', 'Shh, quiet hours 🌙'],
+    happy: ['You are on track today! 🤗', 'Look at you go! ✨', 'Loving this streak 🔥'],
+    encourage: ['A few things slipped — it is okay, keep moving 💪', 'Missed one? No big deal, next block is fresh 🍬'],
+    neutral: ['Hi Senji! 👋', 'One block at a time 🍭', 'You got this 🌟']
+  };
+  const MASCOT_ICON = {sleepy:'moon', happy:'laugh', encourage:'heart', neutral:'smile'};
+  async function computeMascotState(){
+    const hour = new Date().getHours();
+    if(hour >= 22 || hour < 6) return 'sleepy';
+    const dayName = DAYS[todayIdx];
+    const blocks = await getSchedule(dayName);
+    const nowMin = currentMinutes();
+    const pastBlocks = blocks.filter(b => nowMin >= b.time[1]);
+    if(!pastBlocks.length) return 'neutral';
+    const missedCount = pastBlocks.filter(b => doneMap[b.id] === false).length;
+    if(missedCount > 0) return 'encourage';
+    return 'happy';
+  }
+  async function refreshMascot(){
+    const state = await computeMascotState();
+    mascotEl.innerHTML = `<i data-lucide="${MASCOT_ICON[state]}"></i>`;
+    mascotEl.dataset.state = state;
+    refreshIcons();
+  }
+  mascotEl.onclick = async ()=>{
+    const state = mascotEl.dataset.state || 'neutral';
+    const msgs = MASCOT_MESSAGES[state] || MASCOT_MESSAGES.neutral;
+    mascotBubble.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+    mascotBubble.classList.add('show');
+    setTimeout(()=>mascotBubble.classList.remove('show'), 2600);
+  };
+  refreshMascot();
+  setInterval(refreshMascot, 60000);
+
+  /* ---------------- Focus timer (25/5) ---------------- */
+  const timerCard = document.getElementById('timerCard');
+  const timerClockEl = document.getElementById('timerClock');
+  const timerPhaseEl = document.getElementById('timerPhase');
+  const timerStartPauseBtn = document.getElementById('timerStartPause');
+  let timerInterval = null;
+  let timerSeconds = 25*60;
+  let timerPhaseName = 'Focus';
+  let timerRunning = false;
+
+  function renderTimerClock(){
+    const m = Math.floor(timerSeconds/60), s = timerSeconds%60;
+    timerClockEl.textContent = pad(m)+':'+pad(s);
+    timerPhaseEl.textContent = timerPhaseName;
+  }
+  function timerTick(){
+    timerSeconds--;
+    if(timerSeconds < 0){
+      if(timerPhaseName === 'Focus'){
+        timerPhaseName = 'Break';
+        timerSeconds = 5*60;
+        showToast('Focus done — take a 5 min break!', 'timer');
+      } else {
+        timerPhaseName = 'Focus';
+        timerSeconds = 25*60;
+        showToast('Break over — back to focus!', 'timer');
+      }
+      checkSound(true);
+      if(navigator.vibrate) try{ navigator.vibrate([80,40,80]); }catch(e){}
+    }
+    renderTimerClock();
+  }
+  function openTimer(){
+    timerCard.classList.add('show');
+  }
+  function startPauseTimer(){
+    timerRunning = !timerRunning;
+    timerStartPauseBtn.innerHTML = timerRunning ? '<i data-lucide="pause"></i>' : '<i data-lucide="play"></i>';
+    refreshIcons();
+    if(timerRunning){ timerInterval = setInterval(timerTick, 1000); }
+    else { clearInterval(timerInterval); }
+  }
+  document.getElementById('timerStartPause').onclick = startPauseTimer;
+  document.getElementById('timerReset').onclick = ()=>{
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerStartPauseBtn.innerHTML = '<i data-lucide="play"></i>';
+    refreshIcons();
+    timerPhaseName = 'Focus';
+    timerSeconds = 25*60;
+    renderTimerClock();
+  };
+  document.getElementById('timerClose').onclick = ()=>{
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerStartPauseBtn.innerHTML = '<i data-lucide="play"></i>';
+    refreshIcons();
+    timerCard.classList.remove('show');
+  };
+  renderTimerClock();
+
+  /* ---------------- Swipe gestures ---------------- */
+  (function(){
+    const timelineEl = document.getElementById('timeline');
+    let touchStartX = 0, touchStartY = 0, touching = false;
+    timelineEl.addEventListener('touchstart', (e)=>{
+      if(e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touching = true;
+    }, {passive:true});
+    timelineEl.addEventListener('touchend', (e)=>{
+      if(!touching) return;
+      touching = false;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.5){
+        if(dx < 0 && selectedIdx < 6){ selectedIdx++; }
+        else if(dx > 0 && selectedIdx > 0){ selectedIdx--; }
+        else return;
+        renderDayTabs();
+        loadDone(selectedIdx);
+      }
+    }, {passive:true});
+  })();
+
+  /* ---------------- Weekly stats ---------------- */
+  const statsOverlay = document.getElementById('statsOverlay');
+  const statsRowEl = document.getElementById('statsRow');
+  async function renderStats(){
+    statsRowEl.innerHTML = '';
+    const today = new Date();
+    for(let i=6; i>=0; i--){
+      const d = new Date(today);
+      d.setDate(d.getDate()-i);
+      const ds = dateKey(d);
+      const jsD = d.getDay();
+      const dayIdx = jsD===0?6:jsD-1;
+      const dayName = DAYS[dayIdx];
+      const blocks = await getSchedule(dayName);
+      let map = {};
+      try{ const val = await storageGet('done:'+ds); map = val ? JSON.parse(val) : {}; }catch(e){}
+      const doneCount = blocks.filter(b=>!!map[b.id]).length;
+      const pct = blocks.length ? Math.round((doneCount/blocks.length)*100) : 0;
+      const wrap = document.createElement('div');
+      wrap.className = 'stats-bar-wrap';
+      wrap.innerHTML = `
+        <span class="stats-pct">${pct}%</span>
+        <div class="stats-bar" style="height:${Math.max(pct,3)}%;background:${i===0?'var(--korean)':'var(--ai)'}"></div>
+        <span class="stats-label">${dayName}</span>
+      `;
+      statsRowEl.appendChild(wrap);
+    }
+  }
+  document.getElementById('statsBtn').onclick = async ()=>{
+    await renderStats();
+    statsOverlay.classList.add('show');
+  };
+  document.getElementById('closeStats').onclick = ()=> statsOverlay.classList.remove('show');
+  statsOverlay.addEventListener('click', (e)=>{ if(e.target===statsOverlay) statsOverlay.classList.remove('show'); });
+
 
   const overlay = document.getElementById('settingsOverlay');
   const settingsDayTabsEl = document.getElementById('settingsDayTabs');
@@ -912,7 +1330,7 @@
           <span>–</span>
           <input type="time" class="edit-end" value="${minToTimeInput(b.time[1])}">
           <select class="edit-tag">${tagOptionsHtml(b.tag)}</select>
-          <button class="edit-delete" title="Delete block">x</button>
+          <button class="edit-delete" title="Delete block"><i data-lucide="trash-2"></i></button>
         </div>
         <input type="text" class="edit-title" placeholder="Title" value="${b.title.replace(/"/g,'&quot;')}">
         <textarea class="edit-desc" placeholder="Description (optional)">${b.desc||''}</textarea>
@@ -923,6 +1341,7 @@
       };
       settingsBlockListEl.appendChild(row);
     });
+    refreshIcons();
   }
 
   async function loadEditorForDay(){
@@ -974,7 +1393,7 @@
     const fresh = await resetSchedule(dayName);
     workingBlocks = JSON.parse(JSON.stringify(fresh));
     renderEditRows();
-    showToast('↺ '+dayName+' reset to default');
+    showToast(dayName+' reset to default', 'rotate-ccw');
     if(dayName === DAYS[selectedIdx]) renderTimeline();
   };
   document.getElementById('saveDayBtn').onclick = async ()=>{
@@ -982,10 +1401,12 @@
     const blocks = readRowsIntoWorkingBlocks();
     await saveSchedule(dayName, blocks);
     workingBlocks = blocks;
-    showToast('💾 '+dayName+' saved!');
+    showToast(dayName+' saved!', 'save');
     if(dayName === DAYS[selectedIdx]) renderTimeline();
     overlay.classList.remove('show');
   };
+
+  refreshIcons();
 })();
 </script>
 </body>
